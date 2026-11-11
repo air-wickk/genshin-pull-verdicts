@@ -1,0 +1,792 @@
+{
+  "10000002": {
+    "name": "Kamisato Ayaka",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Ayaka",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000003": {
+    "name": "Jean",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Qin",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005": {
+    "name": "Traveler",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000006": {
+    "name": "Lisa",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Lisa",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000007": {
+    "name": "Traveler",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000014": {
+    "name": "Barbara",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Barbara",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000015": {
+    "name": "Kaeya",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Kaeya",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000016": {
+    "name": "Diluc",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Diluc",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000020": {
+    "name": "Razor",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Razor",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000021": {
+    "name": "Amber",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Ambor",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000022": {
+    "name": "Venti",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Venti",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000023": {
+    "name": "Xiangling",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Xiangling",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000024": {
+    "name": "Beidou",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Beidou",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000025": {
+    "name": "Xingqiu",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Xingqiu",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000026": {
+    "name": "Xiao",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Xiao",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000027": {
+    "name": "Ningguang",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Ningguang",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000029": {
+    "name": "Klee",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Klee",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000030": {
+    "name": "Zhongli",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Zhongli",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000031": {
+    "name": "Fischl",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Fischl",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000032": {
+    "name": "Bennett",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Bennett",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000033": {
+    "name": "Tartaglia",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Tartaglia",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000034": {
+    "name": "Noelle",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Noel",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000035": {
+    "name": "Qiqi",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Qiqi",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000036": {
+    "name": "Chongyun",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Chongyun",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000037": {
+    "name": "Ganyu",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Ganyu",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000038": {
+    "name": "Albedo",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Albedo",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000039": {
+    "name": "Diona",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Diona",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000041": {
+    "name": "Mona",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Mona",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000042": {
+    "name": "Keqing",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Keqing",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000043": {
+    "name": "Sucrose",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Sucrose",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000044": {
+    "name": "Xinyan",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Xinyan",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000045": {
+    "name": "Rosaria",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Rosaria",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000046": {
+    "name": "Hu Tao",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Hutao",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000047": {
+    "name": "Kaedehara Kazuha",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Kazuha",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000048": {
+    "name": "Yanfei",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Feiyan",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000049": {
+    "name": "Yoimiya",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Yoimiya",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000050": {
+    "name": "Thoma",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Tohma",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000051": {
+    "name": "Eula",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Eula",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000052": {
+    "name": "Raiden Shogun",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Shougun",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000053": {
+    "name": "Sayu",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Sayu",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000054": {
+    "name": "Sangonomiya Kokomi",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Kokomi",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000055": {
+    "name": "Gorou",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Gorou",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000056": {
+    "name": "Kujou Sara",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Sara",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000057": {
+    "name": "Arataki Itto",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Itto",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000058": {
+    "name": "Yae Miko",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Yae",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000059": {
+    "name": "Shikanoin Heizou",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Heizo",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000060": {
+    "name": "Yelan",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Yelan",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000061": {
+    "name": "Kirara",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Momoka",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000062": {
+    "name": "Aloy",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Aloy",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000063": {
+    "name": "Shenhe",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Shenhe",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000064": {
+    "name": "Yun Jin",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Yunjin",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000065": {
+    "name": "Kuki Shinobu",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Shinobu",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000066": {
+    "name": "Kamisato Ayato",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Ayato",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000067": {
+    "name": "Collei",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Collei",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000068": {
+    "name": "Dori",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Dori",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000069": {
+    "name": "Tighnari",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Tighnari",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000070": {
+    "name": "Nilou",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Nilou",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000071": {
+    "name": "Cyno",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Cyno",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000072": {
+    "name": "Candace",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Candace",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000073": {
+    "name": "Nahida",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Nahida",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000074": {
+    "name": "Layla",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Layla",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000075": {
+    "name": "Wanderer",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Wanderer",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000076": {
+    "name": "Faruzan",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Faruzan",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000077": {
+    "name": "Yaoyao",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Yaoyao",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000078": {
+    "name": "Alhaitham",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Alhatham",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000079": {
+    "name": "Dehya",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Dehya",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000080": {
+    "name": "Mika",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Mika",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000081": {
+    "name": "Kaveh",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Kaveh",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000082": {
+    "name": "Baizhu",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Baizhuer",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000083": {
+    "name": "Lynette",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Linette",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000084": {
+    "name": "Lyney",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Liney",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000085": {
+    "name": "Freminet",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Freminet",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000086": {
+    "name": "Wriothesley",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Wriothesley",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000087": {
+    "name": "Neuvillette",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Neuvillette",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000088": {
+    "name": "Charlotte",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Charlotte",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000089": {
+    "name": "Furina",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Furina",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000090": {
+    "name": "Chevreuse",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Chevreuse",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000091": {
+    "name": "Navia",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Navia",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000092": {
+    "name": "Gaming",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Gaming",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000093": {
+    "name": "Xianyun",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Liuyun",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000094": {
+    "name": "Chiori",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Chiori",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000095": {
+    "name": "Sigewinne",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Sigewinne",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000096": {
+    "name": "Arlecchino",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Arlecchino",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000097": {
+    "name": "Sethos",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Sethos",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000098": {
+    "name": "Clorinde",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Clorinde",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000099": {
+    "name": "Emilie",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Emilie",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000100": {
+    "name": "Kachina",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Kachina",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000101": {
+    "name": "Kinich",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Kinich",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000102": {
+    "name": "Mualani",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Mualani",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000103": {
+    "name": "Xilonen",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Xilonen",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000104": {
+    "name": "Chasca",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Chasca",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000105": {
+    "name": "Ororon",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Olorun",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000106": {
+    "name": "Mavuika",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Mavuika",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000107": {
+    "name": "Citlali",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Citlali",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000108": {
+    "name": "Lan Yan",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Lanyan",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000109": {
+    "name": "Yumemizuki Mizuki",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Mizuki",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000110": {
+    "name": "Iansan",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Iansan",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000111": {
+    "name": "Varesa",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Varesa",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000112": {
+    "name": "Escoffier",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Escoffier",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000113": {
+    "name": "Ifa",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Ifa",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000114": {
+    "name": "Skirk",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_SkirkNew",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000115": {
+    "name": "Dahlia",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Dahlia",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000116": {
+    "name": "Ineffa",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Ineffa",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000117": {
+    "name": "10000117",
+    "element": "None"
+  },
+  "10000118": {
+    "name": "10000118",
+    "element": "None"
+  },
+  "10000119": {
+    "name": "Lauma",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Lauma",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000120": {
+    "name": "Flins",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Flins",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000121": {
+    "name": "Aino",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Aino",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000122": {
+    "name": "Nefer",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_Nefer",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000123": {
+    "name": "Durin",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Durin",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000124": {
+    "name": "Jahoda",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Jahoda",
+    "weaponType": "WEAPON_BOW"
+  },
+  "10000901": {
+    "name": "Mavuika (Trial)",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Mavuika",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "10000902": {
+    "name": "Hu Tao (Trial)",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Hutao",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000903": {
+    "name": "Ineffa",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Ineffa",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000904": {
+    "name": "Columbina",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_Columbina",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000998": {
+    "name": "10000998",
+    "element": "None"
+  },
+  "10000999": {
+    "name": "10000999",
+    "element": "None"
+  },
+  "11000046": {
+    "name": "Pyro Archon (Test)",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Qin",
+    "weaponType": "WEAPON_CLAYMORE"
+  },
+  "11000998": {
+    "name": "11000998",
+    "element": "None"
+  },
+  "11000999": {
+    "name": "11000999",
+    "element": "None"
+  },
+  "10000005-502": {
+    "name": "Traveler",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-503": {
+    "name": "Traveler",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-504": {
+    "name": "Traveler",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-506": {
+    "name": "Traveler",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-507": {
+    "name": "Traveler",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-508": {
+    "name": "Traveler",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000005-501": {
+    "name": "Traveler",
+    "element": "None",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy"
+  },
+  "10000007-701": {
+    "name": "Traveler",
+    "element": "None",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl"
+  },
+  "10000007-702": {
+    "name": "Traveler",
+    "element": "Pyro",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000007-703": {
+    "name": "Traveler",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000007-704": {
+    "name": "Traveler",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000007-706": {
+    "name": "Traveler",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000007-707": {
+    "name": "Traveler",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000007-708": {
+    "name": "Traveler",
+    "element": "Dendro",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  }
+}

@@ -6,8 +6,10 @@ export type ElementName =
   | 'Dendro'
   | 'Cryo'
   | 'Geo'
+  | 'None'
 
 export interface RosterCharacter {
+  id: string
   name: string
   element: ElementName
   level: number

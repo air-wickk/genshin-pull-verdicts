@@ -1,18 +1,8 @@
-import type { Banner, RosterCharacter, Verdict } from './types'
+import type { Banner, Verdict } from './types'
 
-// Mock data for stage 1. Stage 3 replaces the roster with real Enka.Network
-// data; stage 4 replaces this banner with src/banners.json.
-export const MOCK_ROSTER: RosterCharacter[] = [
-  { name: 'Hu Tao', element: 'Pyro', level: 90, constellation: 1 },
-  { name: 'Yelan', element: 'Hydro', level: 90, constellation: 0 },
-  { name: 'Kazuha', element: 'Anemo', level: 90, constellation: 2 },
-  { name: 'Raiden Shogun', element: 'Electro', level: 80, constellation: 0 },
-  { name: 'Nahida', element: 'Dendro', level: 90, constellation: 0 },
-  { name: 'Furina', element: 'Hydro', level: 90, constellation: 1 },
-  { name: 'Zhongli', element: 'Geo', level: 80, constellation: 0 },
-  { name: 'Ayaka', element: 'Cryo', level: 90, constellation: 0 },
-]
-
+// Stage 4 replaces this banner with src/banners.json; stage 5 replaces the
+// verdict with the real rules engine. Kept here only so the UI renders
+// before those stages land.
 export const MOCK_BANNER: Banner = {
   character: 'Arlecchino',
   element: 'Pyro',
