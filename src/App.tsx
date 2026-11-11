@@ -168,7 +168,7 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           type="text"
           inputMode="numeric"
           pattern="[0-9]{9}"
-          placeholder="UID, e.g. 700000001"
+          placeholder="Your 9-digit UID"
           value={uid}
           onChange={(event) =>
             setUid(event.target.value.replace(/[^0-9]/g, '').slice(0, 9))
