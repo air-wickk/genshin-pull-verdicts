@@ -4,8 +4,28 @@ import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
 import bannerData from './banners.json'
 import { verdict as computeVerdict } from './verdict'
+import { WishReveal } from './WishReveal'
 
 const banner = bannerData as Banner
+
+// Canvas can't read CSS variables, so the element tint for the wish
+// particles needs real hex values (mirrors the --element tokens).
+const ELEMENT_HEX: Record<ElementName, string> = {
+  Pyro: '#ef7938',
+  Hydro: '#4cc2f1',
+  Anemo: '#74c2a8',
+  Electro: '#af8ec1',
+  Dendro: '#a2c205',
+  Cryo: '#9fd6e3',
+  Geo: '#fab632',
+  None: '#8f99ab',
+}
+
+// The wish reveal is motion for its own sake, so reduced-motion users
+// never get it mounted at all.
+const REDUCE_MOTION =
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const ELEMENT_COLORS: Record<ElementName, string> = {
   Pyro: 'var(--pyro)',
@@ -151,7 +171,7 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           Check my roster
         </button>
       </form>
-      <p className="quiet">Public showcase data only. Nothing to log in to.</p>
+      <p className="quiet">Public showcase data only.</p>
     </section>
   )
 }
@@ -516,6 +536,8 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
 
   return (
     <section className="screen screen-verdict">
+      {!REDUCE_MOTION && <WishReveal color={ELEMENT_HEX[banner.element]} />}
+      {!REDUCE_MOTION && <div className="wish-flash" aria-hidden="true" />}
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
@@ -537,6 +559,14 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
         className={`verdict-card ${decisionClass}`}
         style={{ '--element': ELEMENT_COLORS[banner.element] } as React.CSSProperties}
       >
+        <span className="sparkles" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
         <p className={`verdict-word ${decisionClass}`}>
           {DECISION_LABEL[verdictResult.decision]}
         </p>
