@@ -892,34 +892,46 @@ details.why ul {
   width: 1200px;
   height: 630px;
   background: var(--bg);
-  border: 1px solid var(--line);
+  border-top: 4px solid color-mix(in srgb, var(--state, var(--line)) 70%, transparent);
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 64px;
+  gap: 20px;
+  padding: 48px 64px;
   font-family: inherit;
 }
 
+.share-kicker {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #f5c86b;
+}
+
 .share-icon {
-  width: 96px;
-  height: 96px;
-  border-radius: 16px;
+  width: 112px;
+  height: 112px;
+  border-radius: 24px;
+  border: 3px solid rgba(245, 200, 107, 0.4);
+  box-shadow: 0 0 70px color-mix(in srgb, var(--state, transparent) 30%, transparent);
 }
 
 .share-word {
   position: relative;
-  font-size: 144px;
+  font-size: 136px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1;
   margin: 0;
+  text-shadow: 0 0 60px color-mix(in srgb, var(--state, transparent) 40%, transparent);
 }
 
 .share-word.love {
-  font-size: 88px;
+  font-size: 84px;
 }
 
 .share-word.pull {
@@ -935,26 +947,31 @@ details.why ul {
 }
 
 .share-character {
-  font-size: 32px;
-  font-weight: 600;
   margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  color: #f5c86b;
 }
 
 .share-reason {
-  font-size: 24px;
-  color: var(--quiet);
+  font-size: 25px;
+  color: var(--text);
   margin: 0;
-  max-width: 36ch;
+  max-width: 42ch;
   text-align: center;
+  opacity: 0.85;
 }
 
-.share-brand {
+.share-foot {
   position: absolute;
-  bottom: 32px;
-  right: 48px;
-  font-size: 20px;
-  color: var(--quiet);
+  bottom: 40px;
+  left: 64px;
+  right: 64px;
+  display: flex;
+  justify-content: space-between;
   margin: 0;
+  font-size: 21px;
+  color: var(--quiet);
 }
 
 /* ---------- Footer ---------- */

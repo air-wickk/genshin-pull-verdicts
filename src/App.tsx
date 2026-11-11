@@ -478,20 +478,42 @@ interface ShareCardProps {
 function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [sharing, setSharing] = useState(false)
+  const [failed, setFailed] = useState(false)
 
   const share = async () => {
     if (!cardRef.current) return
     setSharing(true)
+    setFailed(false)
+    const filename = `pull-verdicts-${banner.character.toLowerCase().replace(/\s+/g, '-')}.png`
     try {
       const dataUrl = await toPng(cardRef.current, {
         width: 1200,
         height: 630,
         pixelRatio: 1,
       })
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], filename, { type: 'image/png' })
+      // Real phones get the real share sheet (Telegram, Discord, camera
+      // roll); everywhere else falls back to a plain download.
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'Pull Verdicts',
+            text: `${banner.character}: ${DECISION_LABEL[verdictResult.decision]}`,
+          })
+        } catch (error) {
+          // User closed the share sheet; not a failure.
+          if ((error as DOMException).name !== 'AbortError') throw error
+        }
+        return
+      }
       const link = document.createElement('a')
-      link.download = `pull-verdicts-${banner.character.toLowerCase().replace(/\s+/g, '-')}.png`
+      link.download = filename
       link.href = dataUrl
       link.click()
+    } catch {
+      setFailed(true)
     } finally {
       setSharing(false)
     }
@@ -500,19 +522,23 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
   return (
     <>
       <button type="button" className="primary" onClick={share} disabled={sharing}>
-        {sharing ? 'Rendering…' : 'Share verdict'}
+        {sharing ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
       </button>
       {/* Off-screen but rendered: the 1200x630 image the button exports. */}
       <div ref={cardRef} className={`share-card ${decisionClass}`} aria-hidden="true">
+        <p className="share-kicker">Pull Verdicts</p>
         <img className="share-icon" src={sideIconUrl(banner.character)} alt="" crossOrigin="anonymous" />
         <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
           {DECISION_LABEL[verdictResult.decision]}
         </p>
         <p className="share-character">
-          {banner.character} · {banner.element} · {bannerDateLabel()}
+          ✦ {banner.character} · {banner.element} ✦
         </p>
         <p className="share-reason">{verdictResult.reasons[0]}</p>
-        <p className="share-brand">Pull Verdicts</p>
+        <p className="share-foot">
+          <span>genshin wish, real verdict</span>
+          <span>{bannerDateLabel()}</span>
+        </p>
       </div>
     </>
   )
