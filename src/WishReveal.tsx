@@ -1,14 +1,28 @@
 import { useEffect, useRef } from 'react'
 
-// One-shot wish reveal, the site's signature moment: a comet streaks in
-// from off-screen and bursts into element-colored particles above the
-// verdict, an expanding ring answers it, then the overlay cleans itself
-// up. The verdict word's CSS reveal is timed to land just after the
-// burst (see index.css). Runs once per verdict screen mount.
-const STREAK_MS = 650
-const RING_MS = 600
-const FADE_AT_MS = 1500
-const END_MS = 2000
+// One-shot wish reveal, the site's signature moment, in three acts like
+// a real wish: the streak, the held breath, the burst.
+//
+//   0.0-0.35s  the screen dims under a veil
+//   0.1-1.4s   a comet curves in from off-screen and decelerates
+//   1.4-1.7s   it hangs above the verdict, pulsing, shedding sparks
+//   1.7s       the burst: flash, rays, double ring, particle storm
+//   1.8s       the verdict word lands (CSS in index.css is timed to this)
+//   2.7-3.3s   the veil of particles fades and the overlay cleans up
+//
+// The burst color telegraphs the decision like wish colors do: gold for
+// PULL/LOVE, cold blue for SKIP. Particles always mix in the banner
+// character's element color.
+const VEIL_IN_MS = 350
+const DROP_START_MS = 100
+const DROP_END_MS = 1400
+const HANG_END_MS = 1700
+const BURST_MS = HANG_END_MS
+const RING1_MS = 500
+const RING2_MS = 900
+const RAYS_MS = 450
+const FADE_AT_MS = 2700
+const END_MS = 3300
 
 interface Particle {
   x: number
@@ -21,7 +35,20 @@ interface Particle {
   color: string
 }
 
-export function WishReveal({ color }: { color: string }) {
+function withAlpha(hex: string, alpha: number): string {
+  const n = parseInt(hex.slice(1), 16)
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`
+}
+
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+
+export function WishReveal({
+  color,
+  flash,
+}: {
+  color: string
+  flash: string
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -39,7 +66,7 @@ export function WishReveal({ color }: { color: string }) {
 
     const gold = '#f5c86b'
     const burstX = W / 2
-    const burstY = H * 0.4
+    const burstY = H * 0.42
     const t0 = performance.now()
     const particles: Particle[] = []
     let spawned = false
@@ -47,9 +74,10 @@ export function WishReveal({ color }: { color: string }) {
     let raf = 0
 
     // The comet flies a quadratic bezier from off-screen top-left to the
-    // burst point, so its path curves like the wish-screen star.
+    // hang point, decelerating as it arrives so the drop reads as fate
+    // slowing down, not a bullet.
     const p0 = { x: -70, y: H * 0.02 }
-    const pc = { x: W * 0.28, y: H * 0.06 }
+    const pc = { x: W * 0.3, y: H * 0.28 }
     const p1 = { x: burstX, y: burstY }
     const bezier = (t: number) => {
       const u = 1 - t
@@ -58,23 +86,30 @@ export function WishReveal({ color }: { color: string }) {
         y: u * u * p0.y + 2 * u * t * pc.y + t * t * p1.y,
       }
     }
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 
-    const spawn = () => {
-      for (let i = 0; i < 80; i++) {
+    const spawn = (count: number, speedMin: number, speedMax: number) => {
+      for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2
-        const speed = 40 + Math.random() * 280
+        const speed = speedMin + Math.random() * (speedMax - speedMin)
         particles.push({
           x: burstX,
           y: burstY,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed - 40,
           born: performance.now(),
-          ttl: 550 + Math.random() * 850,
-          size: 1 + Math.random() * 2.2,
-          color: Math.random() < 0.55 ? gold : color,
+          ttl: 600 + Math.random() * 900,
+          size: 1 + Math.random() * 2.4,
+          color: Math.random() < 0.55 ? flash : color,
         })
       }
+    }
+
+    const veilAlpha = (t: number) => {
+      if (t < 60) return 0
+      if (t < VEIL_IN_MS) return 0.5 * (t / VEIL_IN_MS)
+      if (t < BURST_MS + 300) return 0.5
+      const out = (t - BURST_MS - 300) / (FADE_AT_MS - BURST_MS - 300)
+      return 0.5 * Math.max(0, 1 - out)
     }
 
     const frame = (now: number) => {
@@ -83,14 +118,21 @@ export function WishReveal({ color }: { color: string }) {
       prev = now
       ctx.clearRect(0, 0, W, H)
 
-      // Comet streak, until the burst.
-      if (t < STREAK_MS) {
-        const p = easeOut(t / STREAK_MS)
+      // Act 0: the veil. The wish screen goes quiet and dark.
+      const veil = veilAlpha(t)
+      if (veil > 0) {
+        ctx.fillStyle = `rgba(13, 18, 32, ${veil})`
+        ctx.fillRect(0, 0, W, H)
+      }
+
+      // Act 1: the streak, decelerating into the hang.
+      if (t < DROP_END_MS) {
+        const p = easeOut(Math.max(0, (t - DROP_START_MS) / (DROP_END_MS - DROP_START_MS)))
         const pos = bezier(p)
-        const back = bezier(Math.max(0, p - 0.14))
+        const back = bezier(Math.max(0, p - 0.16))
         const grad = ctx.createLinearGradient(back.x, back.y, pos.x, pos.y)
-        grad.addColorStop(0, 'rgba(245, 200, 107, 0)')
-        grad.addColorStop(1, 'rgba(245, 200, 107, 0.9)')
+        grad.addColorStop(0, withAlpha(flash, 0))
+        grad.addColorStop(1, withAlpha(flash, 0.9))
         ctx.strokeStyle = grad
         ctx.lineWidth = 2.5
         ctx.lineCap = 'round'
@@ -98,35 +140,93 @@ export function WishReveal({ color }: { color: string }) {
         ctx.moveTo(back.x, back.y)
         ctx.lineTo(pos.x, pos.y)
         ctx.stroke()
-        const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 16)
-        glow.addColorStop(0, 'rgba(255, 240, 210, 0.9)')
-        glow.addColorStop(1, 'rgba(255, 240, 210, 0)')
+        const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 18)
+        glow.addColorStop(0, withAlpha(flash, 0.9))
+        glow.addColorStop(1, withAlpha(flash, 0))
         ctx.fillStyle = glow
         ctx.beginPath()
-        ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2)
+        ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2)
         ctx.fill()
         ctx.fillStyle = '#fff'
         ctx.beginPath()
-        ctx.arc(pos.x, pos.y, 2.2, 0, Math.PI * 2)
+        ctx.arc(pos.x, pos.y, 2.4, 0, Math.PI * 2)
         ctx.fill()
       }
 
-      if (t >= STREAK_MS && !spawned) {
-        spawned = true
-        spawn()
+      // Act 2: the held breath. The star hangs, pulse grows, sparks shed.
+      if (t >= DROP_END_MS && t < HANG_END_MS) {
+        const h = (t - DROP_END_MS) / (HANG_END_MS - DROP_END_MS)
+        const pulse = 1 + 0.35 * Math.sin(t * 0.025)
+        const glowR = 10 + 22 * h * pulse
+        const glow = ctx.createRadialGradient(burstX, burstY, 0, burstX, burstY, glowR)
+        glow.addColorStop(0, withAlpha(flash, 0.55 + 0.4 * h))
+        glow.addColorStop(1, withAlpha(flash, 0))
+        ctx.fillStyle = glow
+        ctx.beginPath()
+        ctx.arc(burstX, burstY, glowR, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = '#fff'
+        ctx.beginPath()
+        ctx.arc(burstX, burstY, 2.2 + 1.6 * h, 0, Math.PI * 2)
+        ctx.fill()
+        // Shed a few sparks while it trembles.
+        if (Math.random() < 0.5) {
+          particles.push({
+            x: burstX + (Math.random() - 0.5) * 6,
+            y: burstY,
+            vx: (Math.random() - 0.5) * 60,
+            vy: 30 + Math.random() * 60,
+            born: now,
+            ttl: 420,
+            size: 1,
+            color: gold,
+          })
+        }
       }
 
-      // Expanding answer ring, right after the burst.
-      const ringT = (t - STREAK_MS) / RING_MS
-      if (ringT > 0 && ringT < 1) {
-        ctx.strokeStyle = `rgba(245, 200, 107, ${(1 - ringT) * 0.5})`
-        ctx.lineWidth = 1.5
+      // Act 3: the burst.
+      if (t >= BURST_MS && !spawned) {
+        spawned = true
+        spawn(130, 40, 380)
+      }
+
+      const bt = t - BURST_MS
+
+      // Light rays shooting outward.
+      if (bt >= 0 && bt < RAYS_MS) {
+        const rp = bt / RAYS_MS
+        ctx.lineWidth = 2
+        ctx.lineCap = 'round'
+        for (let i = 0; i < 12; i++) {
+          const angle = (i / 12) * Math.PI * 2 + 0.26
+          const len = 24 + easeOut(rp) * 170
+          ctx.strokeStyle = withAlpha(flash, (1 - rp) * 0.5)
+          ctx.beginPath()
+          ctx.moveTo(burstX + Math.cos(angle) * 18, burstY + Math.sin(angle) * 18)
+          ctx.lineTo(burstX + Math.cos(angle) * len, burstY + Math.sin(angle) * len)
+          ctx.stroke()
+        }
+      }
+
+      // Double answer ring: a fast bright shock, then a wide slow echo.
+      if (bt >= 0 && bt < RING1_MS) {
+        const rp = bt / RING1_MS
+        ctx.strokeStyle = withAlpha(flash, (1 - rp) * 0.8)
+        ctx.lineWidth = 2.5
         ctx.beginPath()
-        ctx.arc(burstX, burstY, 20 + ringT * 180, 0, Math.PI * 2)
+        ctx.arc(burstX, burstY, 12 + easeOut(rp) * 200, 0, Math.PI * 2)
+        ctx.stroke()
+      }
+      if (bt >= 0 && bt < RING2_MS) {
+        const rp = bt / RING2_MS
+        ctx.strokeStyle = withAlpha(gold, (1 - rp) * 0.35)
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.arc(burstX, burstY, 12 + easeOut(rp) * 320, 0, Math.PI * 2)
         ctx.stroke()
       }
 
-      // Particles: radial burst, light gravity, drag, twinkle-out.
+      // Particles: radial storm, light gravity, drag, twinkle-out.
       if (spawned) {
         const drag = Math.exp(-1.1 * dt)
         for (const p of particles) {
@@ -136,11 +236,10 @@ export function WishReveal({ color }: { color: string }) {
           p.vx *= drag
           p.vy *= drag
         }
-        const age = now
         for (const p of particles) {
-          const life = (age - p.born) / p.ttl
+          const life = (now - p.born) / p.ttl
           if (life >= 1) continue
-          const twinkle = 0.7 + 0.3 * Math.sin((age - p.born) * 0.02)
+          const twinkle = 0.7 + 0.3 * Math.sin((now - p.born) * 0.02)
           ctx.globalAlpha = (1 - life) * twinkle
           ctx.fillStyle = p.color
           ctx.beginPath()
@@ -163,7 +262,7 @@ export function WishReveal({ color }: { color: string }) {
 
     raf = requestAnimationFrame(frame)
     return () => cancelAnimationFrame(raf)
-  }, [color])
+  }, [color, flash])
 
   return <canvas ref={canvasRef} className="wish-canvas" aria-hidden="true" />
 }

@@ -27,6 +27,14 @@ const REDUCE_MOTION =
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// The burst color telegraphs the verdict the way wish colors telegraph
+// rarity: gold means good news, cold blue means save your primogems.
+const DECISION_FLASH: Record<keyof typeof DECISION_CLASS, string> = {
+  PULL: '#f5c86b',
+  SKIP: '#7fa8c9',
+  LOVE: '#f0a840',
+}
+
 const ELEMENT_COLORS: Record<ElementName, string> = {
   Pyro: 'var(--pyro)',
   Hydro: 'var(--hydro)',
@@ -539,8 +547,14 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
 
   return (
     <section className="screen screen-verdict">
-      {!REDUCE_MOTION && <WishReveal color={ELEMENT_HEX[banner.element]} />}
-      {!REDUCE_MOTION && <div className="wish-flash" aria-hidden="true" />}
+      {!REDUCE_MOTION && <WishReveal color={ELEMENT_HEX[banner.element]} flash={DECISION_FLASH[verdictResult.decision]} />}
+      {!REDUCE_MOTION && (
+        <div
+          className="wish-flash"
+          style={{ '--flash': DECISION_FLASH[verdictResult.decision] } as React.CSSProperties}
+          aria-hidden="true"
+        />
+      )}
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
