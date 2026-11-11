@@ -825,6 +825,13 @@ button.remove:focus-visible {
   color: var(--love);
 }
 
+/* Why the roster may be shorter than the account really is. */
+.showcase-note {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
 .verdict-character {
   font-size: 18px;
   font-weight: 600;

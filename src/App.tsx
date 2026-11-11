@@ -316,6 +316,11 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
         {new Set(roster.map((character) => character.element)).size} elements
         covered
       </p>
+      <p className="quiet showcase-note">
+        Showcases hold up to 8 pinned characters. Anyone unpinned is
+        invisible to public data, so pin your strongest characters in game
+        or add them by hand.
+      </p>
       <button type="button" className="primary" onClick={onConfirm}>
         Looks right, give me the verdict
       </button>
