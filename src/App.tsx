@@ -43,11 +43,6 @@ function splashUrl(name: string): string {
   return `https://enka.network/ui/UI_Gacha_AvatarImg_${name.replace(/\s+/g, '')}.png`
 }
 
-// Namecard art, likewise optional per character.
-function namecardUrl(name: string): string {
-  return `https://enka.network/ui/UI_NameCardPic_${name.replace(/\s+/g, '')}_P.png`
-}
-
 interface RosterErrorState {
   kind: 'private' | 'rate-limited' | 'network'
 }
@@ -503,7 +498,6 @@ function CharacterArt() {
 function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
   const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
   const matching = roster.filter((character) => character.element === banner.element)
-  const [cardArtFailed, setCardArtFailed] = useState(false)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
 
   return (
@@ -524,16 +518,10 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
         </span>
         <span className="quiet">ends {banner.endDate}</span>
       </div>
-      <div className={`verdict-card ${decisionClass}`}>
-        {!cardArtFailed && BANNER_ID && (
-          <img
-            className="verdict-art"
-            src={namecardUrl(banner.character)}
-            alt=""
-            crossOrigin="anonymous"
-            onError={() => setCardArtFailed(true)}
-          />
-        )}
+      <div
+        className={`verdict-card ${decisionClass}`}
+        style={{ '--element': ELEMENT_COLORS[banner.element] } as React.CSSProperties}
+      >
         <p className={`verdict-word ${decisionClass}`}>
           {DECISION_LABEL[verdictResult.decision]}
         </p>

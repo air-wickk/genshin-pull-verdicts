@@ -43,13 +43,18 @@
 }
 
 html {
-  background: var(--bg);
+  /* All background layers live on the root element: backgrounds painted on
+     body would cover the fixed star and bloom layers, which are negative
+     z-index and paint between the root background and the body box. */
+  background:
+    radial-gradient(90rem 60rem at 50% -20%, rgba(90, 140, 210, 0.16), transparent 60%),
+    radial-gradient(70rem 50rem at 85% 110%, rgba(240, 168, 64, 0.11), transparent 65%),
+    var(--bg);
 }
 
 body {
   margin: 0;
   color: var(--text);
-  background: var(--bg);
   font-family:
     system-ui,
     -apple-system,
@@ -417,11 +422,6 @@ button.text:hover {
   }
 }
 
-/* Namecard wash gains depth-of-field. */
-.verdict-art {
-  filter: blur(2px);
-}
-
 /* Buttons answer the hand. */
 button {
   transition:
@@ -671,18 +671,6 @@ button.remove:focus-visible {
   animation: twinkle 7s ease-in-out infinite alternate;
 }
 
-/* On wide screens the 480px column sits in a big empty field — give the
-   surrounding sky a faint aurora so the column floats in the wish-screen
-   world instead of a bare void. */
-@media (min-width: 720px) {
-  body {
-    background:
-      radial-gradient(90rem 60rem at 50% -20%, rgba(90, 140, 210, 0.16), transparent 60%),
-      radial-gradient(70rem 50rem at 85% 110%, rgba(240, 168, 64, 0.11), transparent 65%),
-      var(--bg);
-  }
-}
-
 @keyframes twinkle {
   from {
     opacity: 0.45;
@@ -814,27 +802,30 @@ button.remove:focus-visible {
   z-index: 1;
 }
 
-/* Namecard art washing the verdict card, where the asset exists. */
+/* The verdict card composes in layers: an element-colored glow at the top
+   (from --element, set inline), then content, then the state flare. */
 .verdict-card {
   position: relative;
   overflow: hidden;
 }
 
+.verdict-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 140px;
+  background: radial-gradient(
+    60% 100% at 50% 0%,
+    color-mix(in srgb, var(--element, transparent) 20%, transparent),
+    transparent 80%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
 .verdict-card > * {
   position: relative;
   z-index: 1;
-}
-
-.verdict-art {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.1;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 70%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 70%);
 }
 
 .verdict-character {
