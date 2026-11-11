@@ -324,28 +324,37 @@ button.text:hover {
   }
 }
 
-/* Faint conic light rays fanning from above the column. */
+/* Faint conic light rays fanning down from a point far above the screen.
+   The pivot (transform-origin) sits at the fan's apex, off-screen, so the
+   rays visibly originate from beyond the viewport and merely sway around
+   that fixed point — a full spin would read as a rotating wheel. */
 .bloom::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: -82vh;
   left: 50%;
   width: 160vw;
-  height: 100vh;
+  height: 200vh;
   transform: translateX(-50%);
+  transform-origin: 50% 0;
   background: repeating-conic-gradient(
     from 180deg at 50% 0%,
     rgba(255, 214, 140, 0.03) 0deg 3deg,
     transparent 3deg 13deg
   );
-  mask-image: linear-gradient(to bottom, black, transparent 55%);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 55%);
-  animation: rays-turn 240s linear infinite;
+  /* The viewport occupies the lower half of the panel; hold full strength
+     at the top of the screen and fade out before its bottom edge. */
+  mask-image: linear-gradient(to bottom, black 50%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 96%);
+  animation: rays-sway 26s ease-in-out infinite alternate;
 }
 
-@keyframes rays-turn {
+@keyframes rays-sway {
+  from {
+    transform: translateX(-50%) rotate(-4deg);
+  }
   to {
-    transform: translateX(-50%) rotate(360deg);
+    transform: translateX(-50%) rotate(4deg);
   }
 }
 
