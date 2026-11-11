@@ -32,15 +32,22 @@ const DECISION_LABEL = {
 
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
-// The banner character's entry in the bundled data store.
-const BANNER_ID = Object.keys(CHARACTERS).find(
-  (id) => CHARACTERS[id].name === banner.character,
-)
-
-// Gacha splash art exists on Enka's CDN for newer characters only;
-// callers must fall back to the side icon (always present).
+// Art URLs. The banner character can be newer than the bundled data store
+// (see src/banners.json), so these are name-based — Enka's CDN keys art by
+// the name with spaces removed. Splash art exists for newer characters
+// only; callers must fall back to the side icon (always present).
 function splashUrl(name: string): string {
   return `https://enka.network/ui/UI_Gacha_AvatarImg_${name.replace(/\s+/g, '')}.png`
+}
+
+function sideIconUrl(name: string): string {
+  return `https://enka.network/ui/UI_AvatarIcon_${name.replace(/\s+/g, '')}.png`
+}
+
+// "2026-11-24" → "Nov 24" — ISO dates are for data, not for people.
+function formatDate(iso: string): string {
+  const date = new Date(`${iso}T00:00:00`)
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
 }
 
 interface RosterErrorState {
@@ -96,7 +103,7 @@ function UidScreen({ onSubmit }: UidScreenProps) {
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
         </span>
-        <span className="quiet">ends {banner.endDate}</span>
+        <span className="quiet">ends {formatDate(banner.endDate)}</span>
       </div>
       <p className="art-caption">
         Pull Verdicts reads your public showcase, compares it against the
@@ -446,19 +453,12 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
       </button>
       {/* Off-screen but rendered: the 1200x630 image the button exports. */}
       <div ref={cardRef} className={`share-card ${decisionClass}`} aria-hidden="true">
-        <img
-          className="share-icon"
-          src={iconUrl({ id: Object.keys(CHARACTERS).find(
-            (id) => CHARACTERS[id].name === banner.character,
-          ) ?? '' })}
-          alt=""
-          crossOrigin="anonymous"
-        />
+        <img className="share-icon" src={sideIconUrl(banner.character)} alt="" crossOrigin="anonymous" />
         <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
           {DECISION_LABEL[verdictResult.decision]}
         </p>
         <p className="share-character">
-          {banner.character} · {banner.element} · ends {banner.endDate}
+          {banner.character} · {banner.element} · ends {formatDate(banner.endDate)}
         </p>
         <p className="share-reason">{verdictResult.reasons[0]}</p>
         <p className="share-brand">Pull Verdicts</p>
@@ -476,19 +476,13 @@ function CharacterArt() {
   // Splash art for newer characters; the side icon always exists.
   const [splashFailed, setSplashFailed] = useState(false)
 
-  if (!BANNER_ID) return null
-
-  const src = splashFailed
-    ? iconUrl({ id: BANNER_ID })
-    : splashUrl(banner.character)
+  const src = splashFailed ? sideIconUrl(banner.character) : splashUrl(banner.character)
 
   return (
     <img
       className="character-art"
       src={src}
       alt={`${banner.character} art`}
-      width={220}
-      height={220}
       crossOrigin="anonymous"
       onError={() => setSplashFailed(true)}
     />
@@ -516,7 +510,7 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
         </span>
-        <span className="quiet">ends {banner.endDate}</span>
+        <span className="quiet">ends {formatDate(banner.endDate)}</span>
       </div>
       <div
         className={`verdict-card ${decisionClass}`}

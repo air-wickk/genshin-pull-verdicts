@@ -335,11 +335,11 @@ button.text:hover {
   transform: translateX(-50%);
   background: repeating-conic-gradient(
     from 180deg at 50% 0%,
-    rgba(255, 214, 140, 0.05) 0deg 3deg,
+    rgba(255, 214, 140, 0.03) 0deg 3deg,
     transparent 3deg 13deg
   );
-  mask-image: linear-gradient(to bottom, black, transparent 72%);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 72%);
+  mask-image: linear-gradient(to bottom, black, transparent 55%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 55%);
   animation: rays-turn 240s linear infinite;
 }
 
@@ -792,10 +792,16 @@ button.remove:focus-visible {
 }
 
 /* Character art (splash → side icon fallback) above the verdict.
-   It overlaps the banner card's top edge so the pieces compose as one
-   object instead of floating apart. */
+   Splash art is usually a wide 2048x1024 image, so it sizes by its own
+   aspect ratio — never a forced square. It overlaps the banner card's
+   top edge so the pieces compose as one object instead of floating
+   apart. */
 .character-art {
   display: block;
+  max-width: 100%;
+  max-height: 300px;
+  width: auto;
+  height: auto;
   border-radius: var(--radius);
   margin: 0 auto -36px;
   position: relative;

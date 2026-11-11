@@ -1,10 +1,10 @@
 {
-  "_comment": "PLACEHOLDER banner. There is no official banner API, so update this file by hand every game version (roughly every 6 weeks): set character, element, weaponType, roleTags, pairings, startDate and endDate. roleTags drive the verdict rules (see src/roles.ts). pairings lists characters this one enables a strong team with; the engine names any of them the player already owns.",
-  "character": "Arlecchino",
-  "element": "Pyro",
-  "weaponType": "Polearm",
-  "roleTags": ["on-field DPS"],
-  "pairings": ["Yelan", "Xingqiu", "Kazuha", "Zhongli", "Bennett"],
-  "startDate": "2026-10-28",
-  "endDate": "2026-11-18"
+  "_comment": "Hand-updated every game version (roughly every 6 weeks) — there is no official banner API. Version 7.2 Phase 1. A character newer than the bundled data store (scripts/build-enka-data.mjs) can sit here; art and share card then use name-based Enka CDN URLs. roleTags drive the verdict rules (see src/roles.ts); pairings lists characters this one enables a strong team with.",
+  "character": "Mitya",
+  "element": "Electro",
+  "weaponType": "Catalyst",
+  "roleTags": ["on-field DPS", "support"],
+  "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
+  "startDate": "2026-11-04",
+  "endDate": "2026-11-24"
 }

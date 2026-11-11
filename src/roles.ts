@@ -121,6 +121,10 @@ export const ROLES: Record<string, RoleTag[]> = {
   'Flins': ['off-field DPS'],
   'Aino': ['support'],
   'Nefer': ['on-field DPS'],
+  // Version 7.2 (not yet in the bundled data store; matches the manual
+  // add-by-hand roster entries until the next data rebuild).
+  'Mitya': ['on-field DPS', 'support'],
+  'Valeriy': ['support'],
 }
 
 export function getRoles(name: string): RoleTag[] | undefined {
