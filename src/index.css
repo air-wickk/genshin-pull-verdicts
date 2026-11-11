@@ -301,6 +301,128 @@ button.remove:focus-visible {
   border-radius: 4px;
 }
 
+/* ---------- Wish-reveal details ---------- */
+
+/* Constellation shown as actual stars: filled gold pips read at a glance. */
+.pips {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.pip {
+  font-size: 10px;
+  color: rgba(232, 230, 227, 0.22);
+}
+
+.pip.filled {
+  color: var(--love);
+}
+
+/* Roster icons get a hairline in the character's element color. */
+.roster-icon {
+  border: 1px solid color-mix(in srgb, var(--element, transparent) 40%, transparent);
+}
+
+/* ---------- Wish reveal (verdict screen only) ---------- */
+
+/* Two CSS-only star layers: tiny positioned dots, no images, no scripts. */
+.screen-verdict::before,
+.screen-verdict::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Far stars */
+.screen-verdict::before {
+  box-shadow:
+    5vw 8vh rgba(232, 230, 227, 0.3), 12vw 22vh rgba(232, 230, 227, 0.22),
+    18vw 5vh rgba(232, 230, 227, 0.38), 25vw 40vh rgba(232, 230, 227, 0.25),
+    31vw 12vh rgba(232, 230, 227, 0.3), 38vw 28vh rgba(232, 230, 227, 0.2),
+    44vw 3vh rgba(232, 230, 227, 0.35), 50vw 18vh rgba(232, 230, 227, 0.28),
+    57vw 35vh rgba(232, 230, 227, 0.22), 63vw 9vh rgba(232, 230, 227, 0.34),
+    70vw 25vh rgba(232, 230, 227, 0.24), 77vw 44vh rgba(232, 230, 227, 0.3),
+    84vw 6vh rgba(232, 230, 227, 0.36), 91vw 19vh rgba(232, 230, 227, 0.26),
+    96vw 33vh rgba(232, 230, 227, 0.32), 3vw 55vh rgba(232, 230, 227, 0.24),
+    9vw 72vh rgba(232, 230, 227, 0.3), 15vw 48vh rgba(232, 230, 227, 0.26),
+    22vw 88vh rgba(232, 230, 227, 0.22), 28vw 65vh rgba(232, 230, 227, 0.34),
+    35vw 78vh rgba(232, 230, 227, 0.28), 41vw 95vh rgba(232, 230, 227, 0.2),
+    47vw 58vh rgba(232, 230, 227, 0.32), 54vw 82vh rgba(232, 230, 227, 0.24),
+    60vw 68vh rgba(232, 230, 227, 0.3), 66vw 92vh rgba(232, 230, 227, 0.26),
+    73vw 55vh rgba(232, 230, 227, 0.22), 79vw 75vh rgba(232, 230, 227, 0.34),
+    86vw 88vh rgba(232, 230, 227, 0.28), 93vw 62vh rgba(232, 230, 227, 0.24),
+    99vw 85vh rgba(232, 230, 227, 0.3), 7vw 35vh rgba(232, 230, 227, 0.26),
+    14vw 15vh rgba(232, 230, 227, 0.36), 20vw 30vh rgba(232, 230, 227, 0.24),
+    27vw 52vh rgba(232, 230, 227, 0.3), 33vw 68vh rgba(232, 230, 227, 0.22),
+    39vw 22vh rgba(232, 230, 227, 0.32), 46vw 8vh rgba(232, 230, 227, 0.28),
+    52vw 45vh rgba(232, 230, 227, 0.24), 59vw 26vh rgba(232, 230, 227, 0.34),
+    65vw 5vh rgba(232, 230, 227, 0.3), 72vw 38vh rgba(232, 230, 227, 0.26),
+    78vw 15vh rgba(232, 230, 227, 0.22), 85vw 52vh rgba(232, 230, 227, 0.32),
+    90vw 42vh rgba(232, 230, 227, 0.28), 95vw 12vh rgba(232, 230, 227, 0.24),
+    2vw 12vh rgba(232, 230, 227, 0.34), 11vw 42vh rgba(232, 230, 227, 0.26),
+    24vw 75vh rgba(232, 230, 227, 0.3), 37vw 45vh rgba(232, 230, 227, 0.24),
+    49vw 30vh rgba(232, 230, 227, 0.36), 61vw 60vh rgba(232, 230, 227, 0.22),
+    74vw 85vh rgba(232, 230, 227, 0.28), 88vw 28vh rgba(232, 230, 227, 0.3);
+}
+
+/* Brighter stars, with the one ambient motion on the screen: a slow twinkle. */
+.screen-verdict::after {
+  box-shadow:
+    8vw 18vh rgba(232, 230, 227, 0.7), 23vw 62vh rgba(232, 230, 227, 0.55),
+    36vw 34vh rgba(232, 230, 227, 0.75), 47vw 78vh rgba(232, 230, 227, 0.5),
+    55vw 12vh rgba(232, 230, 227, 0.8), 68vw 55vh rgba(232, 230, 227, 0.6),
+    81vw 26vh rgba(232, 230, 227, 0.7), 92vw 68vh rgba(232, 230, 227, 0.55),
+    16vw 85vh rgba(232, 230, 227, 0.65), 41vw 8vh rgba(232, 230, 227, 0.75),
+    63vw 40vh rgba(232, 230, 227, 0.6), 76vw 92vh rgba(232, 230, 227, 0.5),
+    88vw 48vh rgba(232, 230, 227, 0.7), 30vw 15vh rgba(232, 230, 227, 0.6);
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The one orchestrated moment: the verdict word arrives; the rest settles. */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.screen-verdict .verdict-word {
+  animation: reveal 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.screen-verdict .verdict-card > :not(.verdict-word) {
+  animation: settle 0.4s ease-out 0.2s both;
+}
+
 /* ---------- Verdict card ---------- */
 
 .verdict-card {
@@ -316,23 +438,41 @@ button.remove:focus-visible {
 .verdict-word {
   /* The hero. "Only if you love them" is a phrase, so the size clamps
      instead of letting it wrap into a wall of type at 320px. */
-  font-size: clamp(48px, 15vw, 72px);
+  position: relative;
+  font-size: clamp(52px, 17vw, 84px);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.05;
   margin: 0;
 }
 
-.verdict-word.pull {
+/* The wish-reveal glow: state-colored, behind the word only. */
+.verdict-word::before,
+.share-word::before {
+  content: '';
+  position: absolute;
+  inset: -50% -25%;
+  background: radial-gradient(closest-side, var(--state-glow), transparent 75%);
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.verdict-word.pull,
+.share-word.pull {
   color: var(--pull);
+  --state-glow: rgba(61, 220, 151, 0.22);
 }
 
-.verdict-word.skip {
+.verdict-word.skip,
+.share-word.skip {
   color: var(--skip);
+  --state-glow: rgba(237, 49, 62, 0.18);
 }
 
-.verdict-word.love {
+.verdict-word.love,
+.share-word.love {
   color: var(--love);
+  --state-glow: rgba(240, 168, 64, 0.2);
   font-size: clamp(40px, 11vw, 56px);
   letter-spacing: -0.02em;
 }
@@ -352,7 +492,7 @@ button.remove:focus-visible {
 .reasons li {
   padding: var(--space-1) 0;
   border-top: 1px solid var(--line);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .reasons li:first-child {
@@ -419,6 +559,7 @@ details.why ul {
 }
 
 .share-word {
+  position: relative;
   font-size: 144px;
   font-weight: 800;
   letter-spacing: -0.03em;

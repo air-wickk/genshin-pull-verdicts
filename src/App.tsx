@@ -173,6 +173,18 @@ function ErrorScreen({ error, onManual, onRetry, onBack }: ErrorScreenProps) {
 
 // ---------- Roster screen ----------
 
+function ConstellationPips({ count }: { count: number }) {
+  return (
+    <span className="pips" role="img" aria-label={`Constellation ${count}`}>
+      {Array.from({ length: 6 }, (_, i) => (
+        <span key={i} className={i < count ? 'pip filled' : 'pip'}>
+          ✦
+        </span>
+      ))}
+    </span>
+  )
+}
+
 interface RosterScreenProps {
   uid: string
   roster: RosterCharacter[]
@@ -191,7 +203,11 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
       <p className="quiet">UID {uid}</p>
       <ul className="roster-grid">
         {roster.map((character) => (
-          <li key={character.id} className="roster-card">
+          <li
+            key={character.id}
+            className="roster-card"
+            style={{ '--element': ELEMENT_COLORS[character.element] } as React.CSSProperties}
+          >
             <img
               className="roster-icon"
               src={iconUrl(character)}
@@ -206,11 +222,10 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
                 <span
                   className="element-dot"
                   style={{ background: ELEMENT_COLORS[character.element] }}
-                  aria-label={character.element}
+                  aria-hidden="true"
                 />
-                <span className="quiet">
-                  Lv. {character.level} · C{character.constellation}
-                </span>
+                <span className="quiet">Lv. {character.level}</span>
+                <ConstellationPips count={character.constellation} />
               </div>
             </div>
           </li>
@@ -434,11 +449,14 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
   const matching = roster.filter((character) => character.element === banner.element)
 
   return (
-    <section className="screen">
+    <section className="screen screen-verdict">
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
-      <div className="banner-card">
+      <div
+        className="banner-card"
+        style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
+      >
         <span>
           <strong>{banner.character}</strong>{' '}
           <span className="quiet">{banner.element}</span>
