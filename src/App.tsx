@@ -611,6 +611,7 @@ export default function App() {
 
   return (
     <main className="app">
+      <div className="bloom" aria-hidden="true" />
       {phase === 'uid' && <UidScreen onSubmit={fetchRoster} />}
       {phase === 'loading' && <LoadingScreen uid={uid} />}
       {phase === 'error' && error && (
