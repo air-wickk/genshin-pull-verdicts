@@ -397,8 +397,8 @@ button.remove:focus-visible {
 @media (min-width: 720px) {
   body {
     background:
-      radial-gradient(90rem 60rem at 50% -20%, rgba(90, 140, 210, 0.09), transparent 60%),
-      radial-gradient(70rem 50rem at 85% 110%, rgba(240, 168, 64, 0.06), transparent 65%),
+      radial-gradient(90rem 60rem at 50% -20%, rgba(90, 140, 210, 0.16), transparent 60%),
+      radial-gradient(70rem 50rem at 85% 110%, rgba(240, 168, 64, 0.11), transparent 65%),
       var(--bg);
   }
 }
@@ -520,11 +520,15 @@ button.remove:focus-visible {
   vertical-align: 1px;
 }
 
-/* Character art (splash → side icon fallback) above the verdict. */
+/* Character art (splash → side icon fallback) above the verdict.
+   It overlaps the banner card's top edge so the pieces compose as one
+   object instead of floating apart. */
 .character-art {
   display: block;
   border-radius: var(--radius);
-  margin: 0 auto;
+  margin: 0 auto -36px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Namecard art washing the verdict card, where the asset exists. */
@@ -545,9 +549,9 @@ button.remove:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.18;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 85%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 85%);
+  opacity: 0.1;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 70%);
 }
 
 .verdict-character {
