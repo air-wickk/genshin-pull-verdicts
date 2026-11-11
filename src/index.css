@@ -1118,3 +1118,131 @@ button.primary:hover::after {
     content: none;
   }
 }
+
+/* ============================================================
+   Site-wide motion: shooting stars, hero entrance, loading star
+   ============================================================ */
+
+/* Rare shooting stars crossing the sky on long, offset cycles. */
+.shooting-stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shooting-stars i {
+  position: absolute;
+  width: 110px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(232, 230, 227, 0) 0%,
+    rgba(245, 200, 107, 0.85) 60%,
+    #fff 100%
+  );
+  opacity: 0;
+  animation: shoot 14s ease-in infinite;
+}
+
+.shooting-stars i:nth-child(1) {
+  top: 12%;
+  left: -140px;
+  animation-delay: 2s;
+}
+
+.shooting-stars i:nth-child(2) {
+  top: 34%;
+  left: -140px;
+  animation-delay: 8.5s;
+  animation-duration: 17s;
+}
+
+.shooting-stars i:nth-child(3) {
+  top: 4%;
+  left: 20%;
+  animation-delay: 12.5s;
+  animation-duration: 19s;
+}
+
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-32deg);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  11% {
+    transform: translateX(62vw) translateY(38vh) rotate(-32deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(62vw) translateY(38vh) rotate(-32deg);
+    opacity: 0;
+  }
+}
+
+/* The hero title condenses out of the dark on its own beat. */
+.hero {
+  animation: hero-in 1.2s var(--ease-out-expo) 0.15s both;
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(1.05);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* The loading screen has a beacon while the showcase is fetched. */
+.load-star {
+  display: block;
+  margin: 0 0 var(--space-3);
+  text-align: center;
+  font-size: 30px;
+  color: #f5c86b;
+  text-shadow: 0 0 16px rgba(245, 200, 107, 0.7);
+  animation: load-spin 1.6s linear infinite;
+}
+
+@keyframes load-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Roster cards answer the hand with an element-tinged glow. */
+.roster-card {
+  transition:
+    transform 0.28s var(--ease-soft),
+    border-color 0.2s ease-out,
+    box-shadow 0.28s var(--ease-soft);
+}
+
+.roster-card:hover {
+  box-shadow:
+    0 0 0 1px rgba(245, 200, 107, 0.16),
+    0 8px 26px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shooting-stars {
+    display: none;
+  }
+
+  .hero,
+  .load-star,
+  .roster-card {
+    animation: none;
+    transition: none;
+  }
+}

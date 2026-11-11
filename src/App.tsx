@@ -181,6 +181,9 @@ function UidScreen({ onSubmit }: UidScreenProps) {
 function LoadingScreen({ uid }: { uid: string }) {
   return (
     <section className="screen">
+      <span className="load-star" aria-hidden="true">
+        ✦
+      </span>
       <p className="quiet">Reading showcase for UID {uid}…</p>
       <ul className="roster-grid" aria-hidden="true">
         {Array.from({ length: 6 }, (_, i) => (
@@ -645,6 +648,11 @@ export default function App() {
   return (
     <main className="app">
       <div className="bloom" aria-hidden="true" />
+      <div className="shooting-stars" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
       {phase === 'uid' && <UidScreen onSubmit={fetchRoster} />}
       {phase === 'loading' && <LoadingScreen uid={uid} />}
       {phase === 'error' && error && (
