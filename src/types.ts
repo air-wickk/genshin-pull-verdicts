@@ -21,6 +21,8 @@ export interface Banner {
   element: ElementName
   weaponType: string
   roleTags: string[]
+  /** Characters the banner character enables a strong team with. */
+  pairings: string[]
   startDate: string
   endDate: string
 }

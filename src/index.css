@@ -392,6 +392,79 @@ details.why ul {
   gap: var(--space-2);
 }
 
+/* ---------- Share card (rendered off-screen, exported as 1200x630 PNG) --- */
+
+.share-card {
+  position: fixed;
+  left: -20000px;
+  top: 0;
+  width: 1200px;
+  height: 630px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 64px;
+  font-family: inherit;
+}
+
+.share-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+}
+
+.share-word {
+  font-size: 144px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0;
+}
+
+.share-word.love {
+  font-size: 88px;
+}
+
+.share-word.pull {
+  color: var(--pull);
+}
+
+.share-word.skip {
+  color: var(--skip);
+}
+
+.share-word.love {
+  color: var(--love);
+}
+
+.share-character {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.share-reason {
+  font-size: 24px;
+  color: var(--quiet);
+  margin: 0;
+  max-width: 36ch;
+  text-align: center;
+}
+
+.share-brand {
+  position: absolute;
+  bottom: 32px;
+  right: 48px;
+  font-size: 20px;
+  color: var(--quiet);
+  margin: 0;
+}
+
 /* ---------- Footer ---------- */
 
 .footnote {

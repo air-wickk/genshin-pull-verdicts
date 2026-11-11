@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react'
-import type { ElementName, RosterCharacter } from './types'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { toPng } from 'html-to-image'
+import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
-import { MOCK_BANNER, MOCK_VERDICT } from './mockData'
+import bannerData from './banners.json'
+import { verdict as computeVerdict } from './verdict'
+
+const banner = bannerData as Banner
 
 const ELEMENT_COLORS: Record<ElementName, string> = {
   Pyro: 'var(--pyro)',
@@ -364,17 +368,71 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
   )
 }
 
-// ---------- Verdict screen (mock until stage 5) ----------
+// ---------- Verdict screen ----------
+
+interface ShareCardProps {
+  verdictResult: Verdict
+}
+
+function ShareCard({ verdictResult }: ShareCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [sharing, setSharing] = useState(false)
+
+  const share = async () => {
+    if (!cardRef.current) return
+    setSharing(true)
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        width: 1200,
+        height: 630,
+        pixelRatio: 1,
+      })
+      const link = document.createElement('a')
+      link.download = `pull-verdicts-${banner.character.toLowerCase().replace(/\s+/g, '-')}.png`
+      link.href = dataUrl
+      link.click()
+    } finally {
+      setSharing(false)
+    }
+  }
+
+  return (
+    <>
+      <button type="button" className="primary" onClick={share} disabled={sharing}>
+        {sharing ? 'Rendering…' : 'Share verdict'}
+      </button>
+      {/* Off-screen but rendered: the 1200x630 image the button exports. */}
+      <div ref={cardRef} className="share-card" aria-hidden="true">
+        <img
+          className="share-icon"
+          src={iconUrl({ id: Object.keys(CHARACTERS).find(
+            (id) => CHARACTERS[id].name === banner.character,
+          ) ?? '' })}
+          alt=""
+          crossOrigin="anonymous"
+        />
+        <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
+          {DECISION_LABEL[verdictResult.decision]}
+        </p>
+        <p className="share-character">
+          {banner.character} · {banner.element} · ends {banner.endDate}
+        </p>
+        <p className="share-reason">{verdictResult.reasons[0]}</p>
+        <p className="share-brand">Pull Verdicts</p>
+      </div>
+    </>
+  )
+}
 
 interface VerdictScreenProps {
   roster: RosterCharacter[]
-  banner: typeof MOCK_BANNER
-  verdict: typeof MOCK_VERDICT
   onBack: () => void
 }
 
-function VerdictScreen({ roster, banner, verdict, onBack }: VerdictScreenProps) {
+function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
+  const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
   const matching = roster.filter((character) => character.element === banner.element)
+
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
@@ -388,12 +446,12 @@ function VerdictScreen({ roster, banner, verdict, onBack }: VerdictScreenProps) 
         <span className="quiet">ends {banner.endDate}</span>
       </div>
       <div className="verdict-card">
-        <p className={`verdict-word ${DECISION_CLASS[verdict.decision]}`}>
-          {DECISION_LABEL[verdict.decision]}
+        <p className={`verdict-word ${DECISION_CLASS[verdictResult.decision]}`}>
+          {DECISION_LABEL[verdictResult.decision]}
         </p>
         <p className="verdict-character">{banner.character}</p>
         <ul className="reasons">
-          {verdict.reasons.map((reason) => (
+          {verdictResult.reasons.map((reason) => (
             <li key={reason}>{reason}</li>
           ))}
         </ul>
@@ -413,6 +471,7 @@ function VerdictScreen({ roster, banner, verdict, onBack }: VerdictScreenProps) 
           </ul>
         </details>
       </div>
+      <ShareCard verdictResult={verdictResult} />
     </section>
   )
 }
@@ -496,12 +555,7 @@ export default function App() {
         />
       )}
       {phase === 'verdict' && (
-        <VerdictScreen
-          roster={roster}
-          banner={MOCK_BANNER}
-          verdict={MOCK_VERDICT}
-          onBack={() => setPhase('roster')}
-        />
+        <VerdictScreen roster={roster} onBack={() => setPhase('roster')} />
       )}
       <footer className="footnote">
         <p className="quiet">

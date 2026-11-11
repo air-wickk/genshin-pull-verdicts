@@ -1,0 +1,10 @@
+{
+  "_comment": "PLACEHOLDER banner. There is no official banner API, so update this file by hand every game version (roughly every 6 weeks): set character, element, weaponType, roleTags, pairings, startDate and endDate. roleTags drive the verdict rules (see src/roles.ts). pairings lists characters this one enables a strong team with; the engine names any of them the player already owns.",
+  "character": "Arlecchino",
+  "element": "Pyro",
+  "weaponType": "Polearm",
+  "roleTags": ["on-field DPS"],
+  "pairings": ["Yelan", "Xingqiu", "Kazuha", "Zhongli", "Bennett"],
+  "startDate": "2026-10-28",
+  "endDate": "2026-11-18"
+}
