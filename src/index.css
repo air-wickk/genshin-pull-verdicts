@@ -106,9 +106,15 @@ p {
   justify-content: center;
 }
 
-.screen-uid .intro {
-  font-size: 15px;
-  color: var(--quiet);
+/* ---------- UID screen ---------- */
+
+.screen-uid .hero {
+  font-size: clamp(40px, 12vw, 56px);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.screen-uid .art-caption {
   max-width: 34ch;
 }
 
@@ -227,8 +233,8 @@ button.text:hover {
 }
 
 .skeleton-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius);
 }
 
@@ -324,11 +330,11 @@ button.remove:focus-visible {
   border: 1px solid color-mix(in srgb, var(--element, transparent) 40%, transparent);
 }
 
-/* ---------- Wish reveal (verdict screen only) ---------- */
+/* ---------- Night sky (site-wide: the wish-screen identity) ---------- */
 
 /* Two CSS-only star layers: tiny positioned dots, no images, no scripts. */
-.screen-verdict::before,
-.screen-verdict::after {
+.app::before,
+.app::after {
   content: '';
   position: fixed;
   top: 0;
@@ -341,7 +347,7 @@ button.remove:focus-visible {
 }
 
 /* Far stars */
-.screen-verdict::before {
+.app::before {
   box-shadow:
     5vw 8vh rgba(232, 230, 227, 0.3), 12vw 22vh rgba(232, 230, 227, 0.22),
     18vw 5vh rgba(232, 230, 227, 0.38), 25vw 40vh rgba(232, 230, 227, 0.25),
@@ -373,7 +379,7 @@ button.remove:focus-visible {
 }
 
 /* Brighter stars, with the one ambient motion on the screen: a slow twinkle. */
-.screen-verdict::after {
+.app::after {
   box-shadow:
     8vw 18vh rgba(232, 230, 227, 0.7), 23vw 62vh rgba(232, 230, 227, 0.55),
     36vw 34vh rgba(232, 230, 227, 0.75), 47vw 78vh rgba(232, 230, 227, 0.5),
@@ -457,24 +463,79 @@ button.remove:focus-visible {
   border-radius: 50%;
 }
 
-.verdict-word.pull,
-.share-word.pull {
-  color: var(--pull);
+/* Decision state flows from the card: word, glow, rules, markers all read it. */
+.verdict-card.pull,
+.share-card.pull {
+  --state: var(--pull);
   --state-glow: rgba(61, 220, 151, 0.22);
 }
 
-.verdict-word.skip,
-.share-word.skip {
-  color: var(--skip);
+.verdict-card.skip,
+.share-card.skip {
+  --state: var(--skip);
   --state-glow: rgba(237, 49, 62, 0.18);
+}
+
+.verdict-card.love,
+.share-card.love {
+  --state: var(--love);
+  --state-glow: rgba(240, 168, 64, 0.2);
+}
+
+.verdict-card {
+  border-top: 2px solid color-mix(in srgb, var(--state, var(--line)) 70%, transparent);
+}
+
+.verdict-word {
+  color: var(--state);
+}
+
+.share-word {
+  color: var(--state);
 }
 
 .verdict-word.love,
 .share-word.love {
-  color: var(--love);
-  --state-glow: rgba(240, 168, 64, 0.2);
   font-size: clamp(40px, 11vw, 56px);
   letter-spacing: -0.02em;
+}
+
+.reasons li::before {
+  content: '✦';
+  color: var(--state);
+  font-size: 12px;
+  margin-right: 8px;
+  vertical-align: 1px;
+}
+
+/* Character art (splash → side icon fallback) above the verdict. */
+.character-art {
+  display: block;
+  border-radius: var(--radius);
+  margin: 0 auto;
+}
+
+/* Namecard art washing the verdict card, where the asset exists. */
+.verdict-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.verdict-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.verdict-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 85%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 85%);
 }
 
 .verdict-character {

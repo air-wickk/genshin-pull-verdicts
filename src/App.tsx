@@ -32,6 +32,22 @@ const DECISION_LABEL = {
 
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
+// The banner character's entry in the bundled data store.
+const BANNER_ID = Object.keys(CHARACTERS).find(
+  (id) => CHARACTERS[id].name === banner.character,
+)
+
+// Gacha splash art exists on Enka's CDN for newer characters only;
+// callers must fall back to the side icon (always present).
+function splashUrl(name: string): string {
+  return `https://enka.network/ui/UI_Gacha_AvatarImg_${name.replace(/\s+/g, '')}.png`
+}
+
+// Namecard art, likewise optional per character.
+function namecardUrl(name: string): string {
+  return `https://enka.network/ui/UI_NameCardPic_${name.replace(/\s+/g, '')}_P.png`
+}
+
 interface RosterErrorState {
   kind: 'private' | 'rate-limited' | 'network'
 }
@@ -74,11 +90,22 @@ function UidScreen({ onSubmit }: UidScreenProps) {
 
   return (
     <section className="screen screen-uid">
-      <h1>Should you pull?</h1>
-      <p className="intro">
-        Enter your Genshin Impact UID. Pull Verdicts reads your public
-        showcase, compares it against the current banner, and gives you a
-        verdict — with the reasons.
+      <h1 className="hero">Should you pull?</h1>
+      <div
+        className="banner-card"
+        style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
+      >
+        <span>
+          <strong>{banner.character}</strong>{' '}
+          <span className="quiet">
+            {banner.element} · {banner.weaponType.toLowerCase()}
+          </span>
+        </span>
+        <span className="quiet">ends {banner.endDate}</span>
+      </div>
+      <p className="art-caption">
+        Pull Verdicts reads your public showcase, compares it against the
+        current banner, and gives you a verdict — with the reasons.
       </p>
       <form
         className="field"
@@ -212,8 +239,8 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
               className="roster-icon"
               src={iconUrl(character)}
               alt={`${character.name} icon`}
-              width={40}
-              height={40}
+              width={48}
+              height={48}
               loading="lazy"
             />
             <div>
@@ -231,6 +258,11 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
           </li>
         ))}
       </ul>
+      <p className="quiet">
+        {roster.length} characters ·{' '}
+        {new Set(roster.map((character) => character.element)).size} elements
+        covered
+      </p>
       <button type="button" className="primary" onClick={onConfirm}>
         Looks right — give me the verdict
       </button>
@@ -387,9 +419,10 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
 
 interface ShareCardProps {
   verdictResult: Verdict
+  decisionClass: 'pull' | 'skip' | 'love'
 }
 
-function ShareCard({ verdictResult }: ShareCardProps) {
+function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [sharing, setSharing] = useState(false)
 
@@ -417,7 +450,7 @@ function ShareCard({ verdictResult }: ShareCardProps) {
         {sharing ? 'Rendering…' : 'Share verdict'}
       </button>
       {/* Off-screen but rendered: the 1200x630 image the button exports. */}
-      <div ref={cardRef} className="share-card" aria-hidden="true">
+      <div ref={cardRef} className={`share-card ${decisionClass}`} aria-hidden="true">
         <img
           className="share-icon"
           src={iconUrl({ id: Object.keys(CHARACTERS).find(
@@ -444,27 +477,64 @@ interface VerdictScreenProps {
   onBack: () => void
 }
 
+function CharacterArt() {
+  // Splash art for newer characters; the side icon always exists.
+  const [splashFailed, setSplashFailed] = useState(false)
+
+  if (!BANNER_ID) return null
+
+  const src = splashFailed
+    ? iconUrl({ id: BANNER_ID })
+    : splashUrl(banner.character)
+
+  return (
+    <img
+      className="character-art"
+      src={src}
+      alt={`${banner.character} art`}
+      width={220}
+      height={220}
+      crossOrigin="anonymous"
+      onError={() => setSplashFailed(true)}
+    />
+  )
+}
+
 function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
   const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
   const matching = roster.filter((character) => character.element === banner.element)
+  const [cardArtFailed, setCardArtFailed] = useState(false)
+  const decisionClass = DECISION_CLASS[verdictResult.decision]
 
   return (
     <section className="screen screen-verdict">
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
+      <CharacterArt />
       <div
         className="banner-card"
         style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
       >
         <span>
           <strong>{banner.character}</strong>{' '}
-          <span className="quiet">{banner.element}</span>
+          <span className="quiet">
+            {banner.element} · {banner.weaponType.toLowerCase()}
+          </span>
         </span>
         <span className="quiet">ends {banner.endDate}</span>
       </div>
-      <div className="verdict-card">
-        <p className={`verdict-word ${DECISION_CLASS[verdictResult.decision]}`}>
+      <div className={`verdict-card ${decisionClass}`}>
+        {!cardArtFailed && BANNER_ID && (
+          <img
+            className="verdict-art"
+            src={namecardUrl(banner.character)}
+            alt=""
+            crossOrigin="anonymous"
+            onError={() => setCardArtFailed(true)}
+          />
+        )}
+        <p className={`verdict-word ${decisionClass}`}>
           {DECISION_LABEL[verdictResult.decision]}
         </p>
         <p className="verdict-character">{banner.character}</p>
@@ -489,7 +559,7 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           </ul>
         </details>
       </div>
-      <ShareCard verdictResult={verdictResult} />
+      <ShareCard verdictResult={verdictResult} decisionClass={decisionClass} />
     </section>
   )
 }
