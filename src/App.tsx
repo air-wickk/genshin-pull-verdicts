@@ -33,7 +33,7 @@ const DECISION_LABEL = {
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
 // Art URLs. The banner character can be newer than the bundled data store
-// (see src/banners.json), so these are name-based — Enka's CDN keys art by
+// (see src/banners.json), so these are name-based. Enka's CDN keys art by
 // the name with spaces removed. Splash art exists for newer characters
 // only; callers must fall back to the side icon (always present).
 function splashUrl(name: string): string {
@@ -44,10 +44,29 @@ function sideIconUrl(name: string): string {
   return `https://enka.network/ui/UI_AvatarIcon_${name.replace(/\s+/g, '')}.png`
 }
 
-// "2026-11-24" → "Nov 24" — ISO dates are for data, not for people.
+// "2026-11-24" becomes "Nov 24": ISO dates are for data, not for people.
 function formatDate(iso: string): string {
   const date = new Date(`${iso}T00:00:00`)
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
+}
+
+// The banner list is hand-updated, so after the end date passes the site
+// would silently keep judging against a banner that no longer exists.
+// Detect that once and say so plainly wherever the banner is shown.
+const BANNER_ENDED = Date.now() > new Date(`${banner.endDate}T23:59:59`).getTime()
+
+function bannerDateLabel(): string {
+  return `${BANNER_ENDED ? 'ended' : 'ends'} ${formatDate(banner.endDate)}`
+}
+
+function StaleBannerNote() {
+  if (!BANNER_ENDED) return null
+  return (
+    <p className="quiet stale-note">
+      This banner ended {formatDate(banner.endDate)}. The banner list is
+      hand-updated, so a new one may already be live in game.
+    </p>
+  )
 }
 
 interface RosterErrorState {
@@ -103,11 +122,12 @@ function UidScreen({ onSubmit }: UidScreenProps) {
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
         </span>
-        <span className="quiet">ends {formatDate(banner.endDate)}</span>
+        <span className="quiet">{bannerDateLabel()}</span>
       </div>
+      <StaleBannerNote />
       <p className="art-caption">
         Pull Verdicts reads your public showcase, compares it against the
-        current banner, and gives you a verdict — with the reasons.
+        current banner, and gives you a verdict, with the reasons.
       </p>
       <form
         className="field"
@@ -266,7 +286,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
         covered
       </p>
       <button type="button" className="primary" onClick={onConfirm}>
-        Looks right — give me the verdict
+        Looks right, give me the verdict
       </button>
       <button type="button" className="text" onClick={onManual}>
         Missing someone? Add characters by hand
@@ -411,7 +431,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
         </ul>
       )}
       <button type="button" className="primary" onClick={onDone}>
-        Done — use this roster
+        Done, use this roster
       </button>
     </section>
   )
@@ -458,7 +478,7 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
           {DECISION_LABEL[verdictResult.decision]}
         </p>
         <p className="share-character">
-          {banner.character} · {banner.element} · ends {formatDate(banner.endDate)}
+          {banner.character} · {banner.element} · {bannerDateLabel()}
         </p>
         <p className="share-reason">{verdictResult.reasons[0]}</p>
         <p className="share-brand">Pull Verdicts</p>
@@ -510,8 +530,9 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
         </span>
-        <span className="quiet">ends {formatDate(banner.endDate)}</span>
+        <span className="quiet">{bannerDateLabel()}</span>
       </div>
+      <StaleBannerNote />
       <div
         className={`verdict-card ${decisionClass}`}
         style={{ '--element': ELEMENT_COLORS[banner.element] } as React.CSSProperties}
@@ -531,7 +552,7 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
             {matching.length > 0 ? (
               matching.map((character) => (
                 <li key={character.id}>
-                  {character.name} — Lv. {character.level}, C
+                  {character.name}, Lv. {character.level}, C
                   {character.constellation}, {character.element}
                 </li>
               ))

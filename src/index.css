@@ -13,7 +13,7 @@
   --skip: #ed313e;
   --love: #f0a840;
 
-  /* Canonical Genshin element colors — data, not decoration. */
+  /* Canonical Genshin element colors: data, not decoration. */
   --pyro: #ef7938;
   --hydro: #4cc2f1;
   --anemo: #74c2a8;
@@ -282,7 +282,7 @@ button.text:hover {
    Wish-screen atmosphere: bloom, rays, glass, blur-focus rises
    ============================================================ */
 
-/* The breathing moon-glow behind the column — warm, slow, alive. */
+/* The breathing moon-glow behind the column: warm, slow, alive. */
 .bloom {
   position: fixed;
   top: -18vh;
@@ -327,7 +327,7 @@ button.text:hover {
 /* Faint conic light rays fanning down from a point far above the screen.
    The pivot (transform-origin) sits at the fan's apex, off-screen, so the
    rays visibly originate from beyond the viewport and merely sway around
-   that fixed point — a full spin would read as a rotating wheel. */
+   that fixed point; a full spin would read as a rotating wheel. */
 .bloom::before {
   content: '';
   position: absolute;
@@ -802,7 +802,7 @@ button.remove:focus-visible {
 
 /* Character art (splash → side icon fallback) above the verdict.
    Splash art is usually a wide 2048x1024 image, so it sizes by its own
-   aspect ratio — never a forced square. It overlaps the banner card's
+   aspect ratio, never a forced square. It overlaps the banner card's
    top edge so the pieces compose as one object instead of floating
    apart. */
 .character-art {
@@ -818,8 +818,7 @@ button.remove:focus-visible {
 }
 
 /* The verdict card composes in layers: an element-colored glow at the top
-   (from --element, set inline), then content, then the state flare. */
-.verdict-card {
+   (from --element, set inline), then content, then the state flare. */.verdict-card {
   position: relative;
   overflow: hidden;
 }
@@ -841,6 +840,13 @@ button.remove:focus-visible {
 .verdict-card > * {
   position: relative;
   z-index: 1;
+}
+
+/* Shown only after the hand-updated banner's end date has passed. */
+.stale-note {
+  font-size: 13px;
+  text-align: center;
+  color: var(--love);
 }
 
 .verdict-character {

@@ -1,5 +1,5 @@
 {
-  "_comment": "Hand-updated every game version (roughly every 6 weeks) — there is no official banner API. Version 7.2 Phase 1. A character newer than the bundled data store (scripts/build-enka-data.mjs) can sit here; art and share card then use name-based Enka CDN URLs. roleTags drive the verdict rules (see src/roles.ts); pairings lists characters this one enables a strong team with.",
+  "_comment": "Hand-updated every game version (roughly every 6 weeks); there is no official banner API. Version 7.2 Phase 1. A character newer than the bundled data store (scripts/build-enka-data.mjs) can sit here; art and share card then use name-based Enka CDN URLs. roleTags drive the verdict rules (see src/roles.ts); pairings lists characters this one enables a strong team with.",
   "character": "Mitya",
   "element": "Electro",
   "weaponType": "Catalyst",

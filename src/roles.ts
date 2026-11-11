@@ -3,7 +3,7 @@
 // banner's roleTags (src/banners.json), so tuning the rules usually means
 // editing this file.
 //
-// This is community-meta opinion, not gospel — source it from KeqingMains
+// This is community-meta opinion, not gospel. Source it from KeqingMains
 // guides when you tune it. Characters without an entry have unknown roles;
 // the engine then declines to SKIP on their behalf rather than guess.
 
