@@ -349,46 +349,58 @@ button.remove:focus-visible {
 /* Far stars */
 .app::before {
   box-shadow:
-    5vw 8vh rgba(232, 230, 227, 0.3), 12vw 22vh rgba(232, 230, 227, 0.22),
-    18vw 5vh rgba(232, 230, 227, 0.38), 25vw 40vh rgba(232, 230, 227, 0.25),
-    31vw 12vh rgba(232, 230, 227, 0.3), 38vw 28vh rgba(232, 230, 227, 0.2),
-    44vw 3vh rgba(232, 230, 227, 0.35), 50vw 18vh rgba(232, 230, 227, 0.28),
-    57vw 35vh rgba(232, 230, 227, 0.22), 63vw 9vh rgba(232, 230, 227, 0.34),
-    70vw 25vh rgba(232, 230, 227, 0.24), 77vw 44vh rgba(232, 230, 227, 0.3),
-    84vw 6vh rgba(232, 230, 227, 0.36), 91vw 19vh rgba(232, 230, 227, 0.26),
-    96vw 33vh rgba(232, 230, 227, 0.32), 3vw 55vh rgba(232, 230, 227, 0.24),
-    9vw 72vh rgba(232, 230, 227, 0.3), 15vw 48vh rgba(232, 230, 227, 0.26),
-    22vw 88vh rgba(232, 230, 227, 0.22), 28vw 65vh rgba(232, 230, 227, 0.34),
-    35vw 78vh rgba(232, 230, 227, 0.28), 41vw 95vh rgba(232, 230, 227, 0.2),
-    47vw 58vh rgba(232, 230, 227, 0.32), 54vw 82vh rgba(232, 230, 227, 0.24),
-    60vw 68vh rgba(232, 230, 227, 0.3), 66vw 92vh rgba(232, 230, 227, 0.26),
-    73vw 55vh rgba(232, 230, 227, 0.22), 79vw 75vh rgba(232, 230, 227, 0.34),
-    86vw 88vh rgba(232, 230, 227, 0.28), 93vw 62vh rgba(232, 230, 227, 0.24),
-    99vw 85vh rgba(232, 230, 227, 0.3), 7vw 35vh rgba(232, 230, 227, 0.26),
-    14vw 15vh rgba(232, 230, 227, 0.36), 20vw 30vh rgba(232, 230, 227, 0.24),
-    27vw 52vh rgba(232, 230, 227, 0.3), 33vw 68vh rgba(232, 230, 227, 0.22),
-    39vw 22vh rgba(232, 230, 227, 0.32), 46vw 8vh rgba(232, 230, 227, 0.28),
-    52vw 45vh rgba(232, 230, 227, 0.24), 59vw 26vh rgba(232, 230, 227, 0.34),
-    65vw 5vh rgba(232, 230, 227, 0.3), 72vw 38vh rgba(232, 230, 227, 0.26),
-    78vw 15vh rgba(232, 230, 227, 0.22), 85vw 52vh rgba(232, 230, 227, 0.32),
-    90vw 42vh rgba(232, 230, 227, 0.28), 95vw 12vh rgba(232, 230, 227, 0.24),
-    2vw 12vh rgba(232, 230, 227, 0.34), 11vw 42vh rgba(232, 230, 227, 0.26),
-    24vw 75vh rgba(232, 230, 227, 0.3), 37vw 45vh rgba(232, 230, 227, 0.24),
-    49vw 30vh rgba(232, 230, 227, 0.36), 61vw 60vh rgba(232, 230, 227, 0.22),
-    74vw 85vh rgba(232, 230, 227, 0.28), 88vw 28vh rgba(232, 230, 227, 0.3);
+    5vw 8vh rgba(232, 230, 227, 0.55), 12vw 22vh rgba(232, 230, 227, 0.45),
+    18vw 5vh rgba(232, 230, 227, 0.62), 25vw 40vh rgba(232, 230, 227, 0.5),
+    31vw 12vh rgba(232, 230, 227, 0.55), 38vw 28vh rgba(232, 230, 227, 0.42),
+    44vw 3vh rgba(232, 230, 227, 0.6), 50vw 18vh rgba(232, 230, 227, 0.52),
+    57vw 35vh rgba(232, 230, 227, 0.45), 63vw 9vh rgba(232, 230, 227, 0.58),
+    70vw 25vh rgba(232, 230, 227, 0.48), 77vw 44vh rgba(232, 230, 227, 0.55),
+    84vw 6vh rgba(232, 230, 227, 0.6), 91vw 19vh rgba(232, 230, 227, 0.5),
+    96vw 33vh rgba(232, 230, 227, 0.56), 3vw 55vh rgba(232, 230, 227, 0.48),
+    9vw 72vh rgba(232, 230, 227, 0.55), 15vw 48vh rgba(232, 230, 227, 0.5),
+    22vw 88vh rgba(232, 230, 227, 0.44), 28vw 65vh rgba(232, 230, 227, 0.58),
+    35vw 78vh rgba(232, 230, 227, 0.52), 41vw 95vh rgba(232, 230, 227, 0.42),
+    47vw 58vh rgba(232, 230, 227, 0.56), 54vw 82vh rgba(232, 230, 227, 0.48),
+    60vw 68vh rgba(232, 230, 227, 0.55), 66vw 92vh rgba(232, 230, 227, 0.5),
+    73vw 55vh rgba(232, 230, 227, 0.44), 79vw 75vh rgba(232, 230, 227, 0.58),
+    86vw 88vh rgba(232, 230, 227, 0.52), 93vw 62vh rgba(232, 230, 227, 0.48),
+    99vw 85vh rgba(232, 230, 227, 0.55), 7vw 35vh rgba(232, 230, 227, 0.5),
+    14vw 15vh rgba(232, 230, 227, 0.6), 20vw 30vh rgba(232, 230, 227, 0.48),
+    27vw 52vh rgba(232, 230, 227, 0.55), 33vw 68vh rgba(232, 230, 227, 0.44),
+    39vw 22vh rgba(232, 230, 227, 0.56), 46vw 8vh rgba(232, 230, 227, 0.52),
+    52vw 45vh rgba(232, 230, 227, 0.46), 59vw 26vh rgba(232, 230, 227, 0.58),
+    65vw 5vh rgba(232, 230, 227, 0.55), 72vw 38vh rgba(232, 230, 227, 0.5),
+    78vw 15vh rgba(232, 230, 227, 0.44), 85vw 52vh rgba(232, 230, 227, 0.56),
+    90vw 42vh rgba(232, 230, 227, 0.52), 95vw 12vh rgba(232, 230, 227, 0.46),
+    2vw 12vh rgba(232, 230, 227, 0.58), 11vw 42vh rgba(232, 230, 227, 0.5),
+    24vw 75vh rgba(232, 230, 227, 0.55), 37vw 45vh rgba(232, 230, 227, 0.46),
+    49vw 30vh rgba(232, 230, 227, 0.6), 61vw 60vh rgba(232, 230, 227, 0.44),
+    74vw 85vh rgba(232, 230, 227, 0.52), 88vw 28vh rgba(232, 230, 227, 0.55);
 }
 
 /* Brighter stars, with the one ambient motion on the screen: a slow twinkle. */
 .app::after {
   box-shadow:
-    8vw 18vh rgba(232, 230, 227, 0.7), 23vw 62vh rgba(232, 230, 227, 0.55),
-    36vw 34vh rgba(232, 230, 227, 0.75), 47vw 78vh rgba(232, 230, 227, 0.5),
-    55vw 12vh rgba(232, 230, 227, 0.8), 68vw 55vh rgba(232, 230, 227, 0.6),
-    81vw 26vh rgba(232, 230, 227, 0.7), 92vw 68vh rgba(232, 230, 227, 0.55),
-    16vw 85vh rgba(232, 230, 227, 0.65), 41vw 8vh rgba(232, 230, 227, 0.75),
-    63vw 40vh rgba(232, 230, 227, 0.6), 76vw 92vh rgba(232, 230, 227, 0.5),
-    88vw 48vh rgba(232, 230, 227, 0.7), 30vw 15vh rgba(232, 230, 227, 0.6);
+    8vw 18vh rgba(232, 230, 227, 0.9) 0 1px, 23vw 62vh rgba(232, 230, 227, 0.7) 0 1px,
+    36vw 34vh rgba(232, 230, 227, 0.95) 0 1px, 47vw 78vh rgba(232, 230, 227, 0.65) 0 1px,
+    55vw 12vh rgba(232, 230, 227, 1) 0 1px, 68vw 55vh rgba(232, 230, 227, 0.75) 0 1px,
+    81vw 26vh rgba(232, 230, 227, 0.9) 0 1px, 92vw 68vh rgba(232, 230, 227, 0.7) 0 1px,
+    16vw 85vh rgba(232, 230, 227, 0.8) 0 1px, 41vw 8vh rgba(232, 230, 227, 0.95) 0 1px,
+    63vw 40vh rgba(232, 230, 227, 0.75) 0 1px, 76vw 92vh rgba(232, 230, 227, 0.65) 0 1px,
+    88vw 48vh rgba(232, 230, 227, 0.9) 0 1px, 30vw 15vh rgba(232, 230, 227, 0.75) 0 1px;
   animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+/* On wide screens the 480px column sits in a big empty field — give the
+   surrounding sky a faint aurora so the column floats in the wish-screen
+   world instead of a bare void. */
+@media (min-width: 720px) {
+  body {
+    background:
+      radial-gradient(90rem 60rem at 50% -20%, rgba(90, 140, 210, 0.09), transparent 60%),
+      radial-gradient(70rem 50rem at 85% 110%, rgba(240, 168, 64, 0.06), transparent 65%),
+      var(--bg);
+  }
 }
 
 @keyframes twinkle {
