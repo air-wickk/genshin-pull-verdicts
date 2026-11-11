@@ -1124,7 +1124,9 @@ button.primary:hover::after {
    Site-wide motion: shooting stars, hero entrance, loading star
    ============================================================ */
 
-/* Rare shooting stars crossing the sky on long, offset cycles. */
+/* Rare shooting stars crossing the sky on long, offset cycles. Each one
+   is rotated once and then travels along its own axis, so the bright
+   head always leads and the tail always trails the exact flight path. */
 .shooting-stars {
   position: fixed;
   inset: 0;
@@ -1135,53 +1137,58 @@ button.primary:hover::after {
 
 .shooting-stars i {
   position: absolute;
-  width: 110px;
-  height: 1.5px;
+  --s: 1;
+  width: 150px;
+  height: 2px;
   border-radius: 2px;
   background: linear-gradient(
     90deg,
     rgba(232, 230, 227, 0) 0%,
-    rgba(245, 200, 107, 0.85) 60%,
+    rgba(245, 200, 107, 0.55) 55%,
+    rgba(255, 244, 220, 0.95) 92%,
     #fff 100%
   );
+  box-shadow: 0 0 8px rgba(245, 200, 107, 0.45);
   opacity: 0;
-  animation: shoot 14s ease-in infinite;
+  animation: shoot 14s linear infinite;
 }
 
 .shooting-stars i:nth-child(1) {
-  top: 12%;
-  left: -140px;
+  top: 10%;
+  left: -180px;
   animation-delay: 2s;
 }
 
 .shooting-stars i:nth-child(2) {
-  top: 34%;
-  left: -140px;
+  top: 30%;
+  left: -180px;
   animation-delay: 8.5s;
   animation-duration: 17s;
+  --s: 0.8;
 }
 
 .shooting-stars i:nth-child(3) {
   top: 4%;
-  left: 20%;
+  left: 15%;
   animation-delay: 12.5s;
   animation-duration: 19s;
+  --s: 1.25;
 }
 
 @keyframes shoot {
   0% {
-    transform: translateX(0) translateY(0) rotate(-32deg);
+    transform: rotate(21deg) translateX(0) scale(var(--s));
     opacity: 0;
   }
-  2% {
+  1.5% {
     opacity: 1;
   }
-  11% {
-    transform: translateX(62vw) translateY(38vh) rotate(-32deg);
+  9% {
+    transform: rotate(21deg) translateX(88vw) scale(var(--s));
     opacity: 0;
   }
   100% {
-    transform: translateX(62vw) translateY(38vh) rotate(-32deg);
+    transform: rotate(21deg) translateX(88vw) scale(var(--s));
     opacity: 0;
   }
 }
