@@ -113,17 +113,21 @@ function saveRoster(uid: string, roster: RosterCharacter[]) {
   }
 }
 
-// ---------- UID screen ----------
+// ---------- Banner picker ----------
 
-interface UidScreenProps {
-  onSubmit: (uid: string) => void
+interface BannerPickerProps {
   banner: Banner
   banners: Banner[]
   onSelectBanner: (character: string) => void
+  /** Second half of the control's aria-label, per screen context. */
+  openLabel: string
 }
 
-function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps) {
-  const [uid, setUid] = useState('')
+// The banner card doubles as the control: it keeps its read-only look but
+// opens the banner list pinned under it. Shared by the UID screen (pick
+// the banner before judging) and the verdict screen (re-judge against
+// another banner without losing your roster).
+function BannerPicker({ banner, banners, onSelectBanner, openLabel }: BannerPickerProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
   const consensus = bannerTier(banner)
@@ -139,76 +143,98 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
   }, [menuOpen])
 
   return (
+    <div
+      className="banner-picker"
+      ref={pickerRef}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') setMenuOpen(false)
+      }}
+    >
+      <button
+        type="button"
+        className="banner-card banner-control"
+        style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
+        aria-expanded={menuOpen}
+        aria-haspopup="listbox"
+        aria-label={`Judging against ${banner.character}. ${openLabel}`}
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        <span>
+          <strong>{banner.character}</strong>{' '}
+          <span className="quiet">
+            {banner.element} · {banner.weaponType.toLowerCase()}
+          </span>
+          {banner.bannerName && (
+            <span className="banner-name">{banner.bannerName}</span>
+          )}
+          {consensus && (
+            <span className="banner-tier">Prydwen: {consensus}</span>
+          )}
+        </span>
+        <span className="quiet">
+          {bannerDateLabel(banner)}
+          <span className="banner-caret" aria-hidden="true">
+            ▾
+          </span>
+        </span>
+      </button>
+      {menuOpen && (
+        <ul className="banner-menu" role="listbox" aria-label="Banners">
+          {banners.map((option) => (
+            <li key={option.character} role="option" aria-selected={option.character === banner.character}>
+              <button
+                type="button"
+                style={{
+                  borderLeft: `3px solid ${
+                    option.character === banner.character
+                      ? ELEMENT_COLORS[option.element]
+                      : 'transparent'
+                  }`,
+                }}
+                onClick={() => {
+                  onSelectBanner(option.character)
+                  setMenuOpen(false)
+                }}
+              >
+                <span>
+                  <strong>{option.character}</strong>{' '}
+                  <span className="quiet">
+                    {option.element} · {option.weaponType.toLowerCase()}
+                  </span>
+                </span>
+                <span className="quiet">
+                  {formatDate(option.startDate)} to {formatDate(option.endDate)}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+// ---------- UID screen ----------
+
+interface UidScreenProps {
+  onSubmit: (uid: string) => void
+  banner: Banner
+  banners: Banner[]
+  onSelectBanner: (character: string) => void
+}
+
+function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps) {
+  const [uid, setUid] = useState('')
+
+  return (
     <section className="screen screen-uid">
       <h1 className="hero">Should you pull?</h1>
-      <div
-        className="banner-picker"
-        ref={pickerRef}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape') setMenuOpen(false)
-        }}
-      >
-        <button
-          type="button"
-          className="banner-card banner-control"
-          style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
-          aria-expanded={menuOpen}
-          aria-haspopup="listbox"
-          aria-label={`Judging against ${banner.character}. Open the banner list`}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span>
-            <strong>{banner.character}</strong>{' '}
-            <span className="quiet">
-              {banner.element} · {banner.weaponType.toLowerCase()}
-            </span>
-            {banner.bannerName && (
-              <span className="banner-name">{banner.bannerName}</span>
-            )}
-            {consensus && (
-              <span className="banner-tier">Prydwen: {consensus}</span>
-            )}
-          </span>
-          <span className="quiet">
-            {bannerDateLabel(banner)}
-            <span className="banner-caret" aria-hidden="true">
-              ▾
-            </span>
-          </span>
-        </button>
-        {menuOpen && (
-          <ul className="banner-menu" role="listbox" aria-label="Banners">
-            {banners.map((option) => (
-              <li key={option.character} role="option" aria-selected={option.character === banner.character}>
-                <button
-                  type="button"
-                  style={{
-                    borderLeft: `3px solid ${
-                      option.character === banner.character
-                        ? ELEMENT_COLORS[option.element]
-                        : 'transparent'
-                    }`,
-                  }}
-                  onClick={() => {
-                    onSelectBanner(option.character)
-                    setMenuOpen(false)
-                  }}
-                >
-                  <span>
-                    <strong>{option.character}</strong>{' '}
-                    <span className="quiet">
-                      {option.element} · {option.weaponType.toLowerCase()}
-                    </span>
-                  </span>
-                  <span className="quiet">
-                    {formatDate(option.startDate)} to {formatDate(option.endDate)}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <BannerPicker
+        banner={banner}
+        banners={banners}
+        onSelectBanner={onSelectBanner}
+        openLabel="Open the banner list"
+      />
       <StaleBannerNote banner={banner} />
       <p className="art-caption">
         Pull Verdicts reads your public showcase, compares it against the
@@ -710,6 +736,9 @@ interface VerdictScreenProps {
   roster: RosterCharacter[]
   uid: string
   banner: Banner
+  banners: Banner[]
+  /** Re-judge against another banner without leaving this screen. */
+  onSelectBanner: (character: string) => void
   onBack: () => void
 }
 
@@ -1008,14 +1037,13 @@ function AmbientArt({ src, shift = 0 }: { src: string; shift?: number }) {
   )
 }
 
-function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
+function VerdictScreen({ roster, uid, banner, banners, onSelectBanner, onBack }: VerdictScreenProps) {
   const verdictResult = useMemo(
     () => computeVerdict(roster, banner),
     [roster, banner],
   )
   const matching = roster.filter((character) => character.element === banner.element)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
-  const consensus = bannerTier(banner)
 
   return (
     <section className="screen screen-verdict">
@@ -1042,24 +1070,12 @@ function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
         ← Back to roster
       </button>
       <CharacterArt banner={banner} />
-      <div
-        className="banner-card"
-        style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
-      >
-        <span>
-          <strong>{banner.character}</strong>{' '}
-          <span className="quiet">
-            {banner.element} · {banner.weaponType.toLowerCase()}
-          </span>
-          {banner.bannerName && (
-            <span className="banner-name">{banner.bannerName}</span>
-          )}
-          {consensus && (
-            <span className="banner-tier">Prydwen: {consensus}</span>
-          )}
-        </span>
-        <span className="quiet">{bannerDateLabel(banner)}</span>
-      </div>
+      <BannerPicker
+        banner={banner}
+        banners={banners}
+        onSelectBanner={onSelectBanner}
+        openLabel="Open the banner list to judge against another banner"
+      />
       <StaleBannerNote banner={banner} />
       <div
         className={`verdict-card ${decisionClass}`}
@@ -1205,6 +1221,8 @@ export default function App() {
           roster={roster}
           uid={uid}
           banner={banner}
+          banners={BANNERS}
+          onSelectBanner={selectBanner}
           onBack={() => setPhase('roster')}
         />
       )}
