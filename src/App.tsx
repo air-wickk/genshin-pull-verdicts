@@ -11,6 +11,7 @@ import {
   bannerEnded,
   bannerSlug,
   formatDate,
+  formatDateYear,
 } from './banners'
 import { verdict as computeVerdict } from './verdict'
 import { bannerTier } from './tiers'
@@ -221,10 +222,12 @@ interface UidScreenProps {
   banner: Banner
   banners: Banner[]
   onSelectBanner: (character: string) => void
+  /** The UID from the last lookup, pre-filled but freely editable. */
+  initialUid: string
 }
 
-function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps) {
-  const [uid, setUid] = useState('')
+function UidScreen({ onSubmit, banner, banners, onSelectBanner, initialUid }: UidScreenProps) {
+  const [uid, setUid] = useState(initialUid)
 
   return (
     <section className="screen screen-uid">
@@ -570,10 +573,17 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
   const cardRef = useRef<HTMLDivElement>(null)
   const [rendering, setRendering] = useState(false)
   const [failed, setFailed] = useState(false)
+  // Splash art with the side icon as fallback, same as the verdict screen.
+  const [artFailed, setArtFailed] = useState(false)
   // The rendered PNG, held open by the dialog. Null means closed.
   const [rendered, setRendered] = useState<{ dataUrl: string; blob: Blob } | null>(null)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
   const [linkState, setLinkState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  const consensus = bannerTier(banner)
+  const artSrc = artFailed ? sideIconUrl(banner.character) : splashUrl(banner.character)
+  // Same calculated centering as the verdict screen (see src/artCenter.ts).
+  const autoShift = useSubjectShift(artSrc)
+  const artShift = banner.artShift ?? autoShift
   // Writing an image to the clipboard is a Chromium/Firefox thing; Safari
   // only got it recently. Hide the button where it cannot work.
   const canCopy =
@@ -717,15 +727,30 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
           cloned off-canvas too and export a blank image. */}
       <div className="share-staging" aria-hidden="true">
         <div ref={cardRef} className={`share-card ${decisionClass}`}>
-          <p className="share-kicker">Pull Verdicts</p>
-          <img className="share-icon" src={sideIconUrl(banner.character)} alt="" crossOrigin="anonymous" />
-          <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
-            {DECISION_LABEL[verdictResult.decision]}
-          </p>
-          <p className="share-character">
-            ✦ {banner.character} · {banner.element} ✦
-          </p>
-          <p className="share-reason">{verdictResult.reasons[0]}</p>
+          <img
+            className="share-art"
+            src={artSrc}
+            alt=""
+            crossOrigin="anonymous"
+            onError={() => setArtFailed(true)}
+            style={{ '--art-shift': `${artShift * 100}%` } as React.CSSProperties}
+          />
+          <div className="share-body">
+            <p className="share-kicker">Pull Verdicts</p>
+            <p className="share-word">{DECISION_LABEL[verdictResult.decision]}</p>
+            <p className="share-character">
+              {banner.character}{' '}
+              <span style={{ color: ELEMENT_COLORS[banner.element] }}>{banner.element}</span>
+              <span className="share-weapon"> · {banner.weaponType.toLowerCase()}</span>
+            </p>
+            {banner.bannerName && <p className="share-banner">{banner.bannerName}</p>}
+            {consensus && <p className="share-tier">Prydwen: {consensus}</p>}
+            <p className="share-reason">{verdictResult.reasons[0]}</p>
+          </div>
+          <div className="share-foot">
+            <span>UID {uid}</span>
+            <span>Pull Verdicts · {formatDateYear(banner.endDate)}</span>
+          </div>
         </div>
       </div>
     </>
@@ -853,22 +878,16 @@ function ElementDrift({ element }: { element: ElementName }) {
   return <canvas className="element-drift" ref={canvasRef} aria-hidden="true" />
 }
 
-function CharacterArt({ banner }: { banner: Banner }) {
-  // Splash art for newer characters; the side icon always exists.
-  const [splashFailed, setSplashFailed] = useState(false)
-  // Calculated subject lean (see src/artCenter.ts), 0 until the splash has
-  // loaded and been analyzed.
-  const [autoShift, setAutoShift] = useState(0)
-
-  const src = splashFailed ? sideIconUrl(banner.character) : splashUrl(banner.character)
-  // A hand override (Banner.artShift) wins; otherwise the art's own pixels
-  // decide. The analysis needs a wide splash: square side icons (the
-  // fallback art) are busts, already centered by construction.
-  const artShift = banner.artShift ?? autoShift
+// Analyzes a wide splash image for its subject lean; the metric and its
+// calibration live in src/artCenter.ts. Returns the calculated
+// correction, 0 until the image has loaded and been analyzed, and 0
+// forever for non-wide art (square side icons are busts, already
+// centered by construction).
+function useSubjectShift(src: string): number {
+  const [shift, setShift] = useState(0)
 
   useEffect(() => {
-    setAutoShift(0)
-    if (splashFailed) return
+    setShift(0)
     let cancelled = false
     const image = new Image()
     image.crossOrigin = 'anonymous'
@@ -888,18 +907,31 @@ function CharacterArt({ banner }: { banner: Banner }) {
         if (!context) return
         context.drawImage(image, 0, 0, width, height)
         try {
-          setAutoShift(subjectShift(context.getImageData(0, 0, width, height).data, width, height))
+          setShift(subjectShift(context.getImageData(0, 0, width, height).data, width, height))
         } catch {
           // Tainted canvas (CORS): the art simply stays uncorrected.
         }
       })
       .catch(() => {
-        // Load failure: the img's own onError handles the fallback.
+        // Load failure: callers handle their own fallback art.
       })
     return () => {
       cancelled = true
     }
-  }, [src, splashFailed])
+  }, [src])
+
+  return shift
+}
+
+function CharacterArt({ banner }: { banner: Banner }) {
+  // Splash art for newer characters; the side icon always exists.
+  const [splashFailed, setSplashFailed] = useState(false)
+
+  const src = splashFailed ? sideIconUrl(banner.character) : splashUrl(banner.character)
+  // A hand override (Banner.artShift) wins; otherwise the art's own pixels
+  // decide (see src/artCenter.ts).
+  const autoShift = useSubjectShift(src)
+  const artShift = banner.artShift ?? autoShift
 
   return (
     <>
@@ -1010,7 +1042,10 @@ function AmbientArt({ src, shift = 0 }: { src: string; shift?: number }) {
       cancelled = true
       window.removeEventListener('resize', draw)
     }
-  }, [src])
+    // `shift` re-runs the draw: the calculated subject nudge (see
+    // src/artCenter.ts) usually resolves after the first paint, and the
+    // resize redraws would otherwise keep the closure's stale value.
+  }, [src, shift])
 
   if (!CANVAS_BLUR) {
     // Browsers without canvas filter (older Safari) keep the CSS-blurred
@@ -1061,15 +1096,19 @@ function VerdictScreen({ roster, uid, banner, banners, onSelectBanner, onBack }:
           aria-hidden="true"
         />
       )}
+      <button type="button" className="text" onClick={onBack}>
+        ← Back to roster
+      </button>
+      <CharacterArt banner={banner} />
+      {/* Painted after the art so the rings ride over it: they share the
+          z-index -1 stratum, and DOM order breaks the tie. The glass cards
+          still cover the wheel, since in-flow content paints above every
+          negative-z child. */}
       <div className="astral" aria-hidden="true">
         <i />
         <i />
         <i />
       </div>
-      <button type="button" className="text" onClick={onBack}>
-        ← Back to roster
-      </button>
-      <CharacterArt banner={banner} />
       <BannerPicker
         banner={banner}
         banners={banners}
@@ -1139,7 +1178,14 @@ export default function App() {
 
   const selectBanner = (character: string) => {
     const found = BANNERS.find((option) => option.character === character)
-    if (found) setBanner(found)
+    if (!found || found.character === banner.character) return
+    setBanner(found)
+    // Switching banners replays the wish (the verdict screen remounts, see
+    // below), so bring the art and the reveal back into view instead of
+    // letting the entrance animations play out above the fold.
+    if (phase === 'verdict') {
+      window.scrollTo({ top: 0, behavior: REDUCE_MOTION ? 'auto' : 'smooth' })
+    }
   }
 
   // Restore the last roster once, then let the user navigate freely.
@@ -1155,6 +1201,12 @@ export default function App() {
   const fetchRoster = async (targetUid: string) => {
     setUid(targetUid)
     setError(null)
+    // Same UID as the roster already in hand: no reason to ask Enka again.
+    // Walk straight to the confirm screen; the wish reveal plays after it.
+    if (targetUid === uid && roster.length > 0) {
+      setPhase('roster')
+      return
+    }
     setPhase('loading')
     try {
       const characters = await getRoster(targetUid)
@@ -1184,6 +1236,7 @@ export default function App() {
           banner={banner}
           banners={BANNERS}
           onSelectBanner={selectBanner}
+          initialUid={uid}
         />
       )}
       {phase === 'loading' && <LoadingScreen uid={uid} />}
@@ -1217,7 +1270,12 @@ export default function App() {
         />
       )}
       {phase === 'verdict' && (
+        /* Keyed by banner: switching banners remounts the screen, so the
+           wish reveal, the verdict word's timed landing, and every
+           entrance animation replay in sync for the new banner, instead
+           of only the canvas burst re-running over a DOM that snapped. */
         <VerdictScreen
+          key={banner.character}
           roster={roster}
           uid={uid}
           banner={banner}

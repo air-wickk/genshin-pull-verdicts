@@ -19,6 +19,17 @@ export function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
 }
 
+// "2026-11-24" becomes "Nov 24, 2026": the share card stamps the banner
+// window with a year, since the card outlives its screen context.
+export function formatDateYear(iso: string): string {
+  const date = new Date(`${iso}T00:00:00`)
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
+}
+
 function bannerStart(banner: Banner): number {
   return Date.parse(`${banner.startDate}T00:00:00`)
 }

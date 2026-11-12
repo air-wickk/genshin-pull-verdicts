@@ -553,45 +553,6 @@ input[type='text']:focus-visible,
   background: rgba(19, 26, 43, 0.8);
 }
 
-/* The exported share card carries the sky too (px-based, 1200x630). */
-.share-card {
-  overflow: hidden;
-}
-
-.share-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  z-index: 0;
-  box-shadow:
-    140px 90px rgba(232, 230, 227, 0.6), 320px 40px rgba(232, 230, 227, 0.4),
-    520px 160px rgba(232, 230, 227, 0.7), 700px 70px rgba(232, 230, 227, 0.45),
-    900px 120px rgba(232, 230, 227, 0.65), 1080px 220px rgba(232, 230, 227, 0.4),
-    240px 300px rgba(232, 230, 227, 0.5), 460px 420px rgba(232, 230, 227, 0.35),
-    640px 360px rgba(232, 230, 227, 0.6), 840px 480px rgba(232, 230, 227, 0.4),
-    1040px 420px rgba(232, 230, 227, 0.55), 600px 520px rgba(232, 230, 227, 0.45);
-}
-
-.share-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: radial-gradient(
-    60rem 40rem at 50% -20%,
-    rgba(90, 140, 210, 0.14),
-    transparent 60%
-  );
-}
-
-.share-card > * {
-  position: relative;
-  z-index: 1;
-}
-
 /* Graceful degradation */
 @supports not (backdrop-filter: blur(1px)) {  .verdict-card,
   .banner-card,
@@ -849,8 +810,7 @@ button.remove:focus-visible {
   color: var(--state);
 }
 
-.verdict-word.love,
-.share-word.love {
+.verdict-word.love {
   font-size: clamp(40px, 11vw, 56px);
   letter-spacing: -0.02em;
 }
@@ -895,7 +855,9 @@ button.remove:focus-visible {
      nudge (fraction of the art's own width, set inline from
      Banner.artShift), so a character who stands off-center inside the
      official frame can be brought to the stage's center without touching
-     the centering mechanism itself. */
+     the centering mechanism itself. This must stay a plain static value:
+     art-float's keyframes must never re-state it (see the keyframes
+     comment below). */
   translate: calc(-50% + var(--art-shift, 0%)) 0;
   height: 100%;
   width: auto;
@@ -920,15 +882,19 @@ button.remove:focus-visible {
 }
 
 @keyframes art-float {
-  /* The keyframes must repeat the centering shift (with the per-character
-     --art-shift nudge): a running animation overrides the element's own
-     translate property, so the static value alone would never show. */
+  /* The bob animates transform, deliberately not translate. The
+     centering in the translate property stays static and out of the
+     compositor: keyframes that resolved var(--art-shift) made the
+     composited layer paint the art at a stale offset after a banner
+     switch (the displacement bug, healed only by a forced repaint).
+     The translate property and a transform animation compose, so the
+     centering and the bob both still apply. */
   0%,
   100% {
-    translate: calc(-50% + var(--art-shift, 0%)) 0;
+    transform: translateY(0);
   }
   50% {
-    translate: calc(-50% + var(--art-shift, 0%)) -12px;
+    transform: translateY(-12px);
   }
 }
 
@@ -1090,20 +1056,73 @@ details.why ul {
   pointer-events: none;
 }
 
+/* ---------- Share card (1200x630, exported via html-to-image) ---------- */
+
+/* A gacha share card: the full-bleed splash anchors the right edge like a
+   wish result, and the verdict stacks down the left over a scrim. All px,
+   all static: html-to-image clones computed styles, so viewport units,
+   CSS filters, and animations are unreliable in the export. */
+
 .share-card {
   position: relative;
   width: 1200px;
   height: 630px;
-  background: var(--bg);
-  border-top: 4px solid color-mix(in srgb, var(--state, var(--line)) 70%, transparent);
+  overflow: hidden;
   color: var(--text);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 48px 64px;
   font-family: inherit;
+  border-top: 4px solid color-mix(in srgb, var(--state, var(--line)) 70%, transparent);
+  /* Night sky with a state-colored glow rising behind the verdict. */
+  background:
+    radial-gradient(
+      720px 540px at 14% 44%,
+      color-mix(in srgb, var(--state, transparent) 13%, transparent),
+      transparent 68%
+    ),
+    linear-gradient(180deg, #111931 0%, var(--bg) 58%, #0a0f1c 100%);
+}
+
+/* The splash: full height, oversized so its frame edge never shows. The
+   subject-lean correction (src/artCenter.ts) flows through --art-shift. */
+.share-art {
+  position: absolute;
+  top: 50%;
+  right: -44px;
+  height: 108%;
+  width: auto;
+  translate: var(--art-shift, 0%) -50%;
+  z-index: 0;
+}
+
+/* Left scrim so the text column reads over any art; bottom band for the
+   footer strip. */
+.share-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(13, 18, 32, 0.94) 0%,
+      rgba(13, 18, 32, 0.72) 36%,
+      rgba(13, 18, 32, 0.18) 60%,
+      transparent 78%
+    ),
+    linear-gradient(180deg, transparent 62%, rgba(10, 15, 28, 0.75) 100%);
+}
+
+.share-body {
+  position: relative;
+  z-index: 2;
+  width: 660px;
+  padding-left: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
 }
 
 .share-kicker {
@@ -1115,54 +1134,75 @@ details.why ul {
   color: #f5c86b;
 }
 
-.share-icon {
-  width: 112px;
-  height: 112px;
-  border-radius: 24px;
-  border: 3px solid rgba(245, 200, 107, 0.4);
-  box-shadow: 0 0 70px color-mix(in srgb, var(--state, transparent) 30%, transparent);
-}
-
 .share-word {
   position: relative;
-  font-size: 136px;
+  margin: 0;
+  font-size: 122px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1;
-  margin: 0;
+  color: var(--state);
   text-shadow: 0 0 60px color-mix(in srgb, var(--state, transparent) 40%, transparent);
 }
 
-.share-word.love {
-  font-size: 84px;
-}
-
-.share-word.pull {
-  color: var(--pull);
-}
-
-.share-word.skip {
-  color: var(--skip);
-}
-
-.share-word.love {
-  color: var(--love);
+/* The phrase wraps, so it plays a size class below the single words. */
+.share-card.love .share-word {
+  font-size: 68px;
+  line-height: 1.12;
 }
 
 .share-character {
   margin: 0;
-  font-size: 30px;
+  font-size: 27px;
   font-weight: 600;
+}
+
+.share-weapon {
+  color: var(--quiet);
+  font-weight: 500;
+}
+
+.share-banner {
+  margin: -8px 0 0;
+  font-size: 21px;
+  font-style: italic;
+  color: #f5c86b;
+}
+
+.share-tier {
+  margin: 0;
+  padding: 7px 18px;
+  border: 1px solid rgba(245, 200, 107, 0.45);
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: #f5c86b;
 }
 
 .share-reason {
-  font-size: 25px;
-  color: var(--text);
   margin: 0;
-  max-width: 42ch;
-  text-align: center;
+  font-size: 24px;
+  line-height: 1.45;
+  color: var(--text);
   opacity: 0.85;
+  max-width: 22em;
+}
+
+.share-foot {
+  position: absolute;
+  left: 72px;
+  right: 72px;
+  bottom: 30px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--state, var(--line)) 50%, transparent);
+  font-size: 19px;
+  letter-spacing: 0.02em;
+  color: var(--quiet);
 }
 
 /* ---------- Share dialog (in-app sheet, opens after rendering) ---------- */
@@ -1530,8 +1570,13 @@ button.primary:hover::after {
   left: 50%;
   top: 42%;
   translate: -50% -50%;
-  border: 1px dashed rgba(245, 200, 107, 0.13);
+  /* Strong enough to read as star chart over the enlarged splash art,
+     which the rings now ride above; still faint against the dark sky.
+     The dark halo is what buys that: on narrow screens the art fills
+     the viewport and the bare 1px dashes vanish into it. */
+  border: 1px dashed rgba(245, 200, 107, 0.42);
   border-radius: 50%;
+  filter: drop-shadow(0 1px 2px rgba(10, 14, 26, 0.9));
   animation: astral-spin var(--spin, 120s) linear infinite;
 }
 
@@ -1560,7 +1605,7 @@ button.primary:hover::after {
   width: 520px;
   height: 520px;
   --spin: 130s;
-  border-color: rgba(245, 200, 107, 0.09);
+  border-color: rgba(245, 200, 107, 0.26);
   animation-direction: reverse;
 }
 
@@ -1568,6 +1613,7 @@ button.primary:hover::after {
   width: 700px;
   height: 700px;
   --spin: 170s;
+  border-color: rgba(245, 200, 107, 0.3);
 }
 
 @keyframes astral-spin {
