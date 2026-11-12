@@ -15,8 +15,8 @@ This isn't a tier list. It's a verdict for *your* account, based on your public 
 
 Rules run in order, and the first match wins. A "strong" character is Lv. 70+, and a pairing partner counts at Lv. 60+.
 
-1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade.
-2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason. One hand-updated modifier: the consensus rank from Prydwen's tier list (stored in `banners.json`) downgrades a gap-PULL to "only if you love them" for weak-tier units, and adds a reason for top-tier ones.
+1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade. One consensus check: an Apex-tier (T0/T0.5) banner character over a built cover far below it (T1.5 or weaker) softens the SKIP to "only if you love them", since the upgrade is real but replacing a built carry is a luxury.
+2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason. One consensus modifier (Prydwen ranks: a generated snapshot in `src/data/tiers.json`, optionally overridden per banner in `banners.json`) downgrades a gap-PULL to "only if you love them" for weak-tier units, and adds a reason for top-tier ones.
 3. **PULL** if the banner character pairs into a strong team with a character the player already owns.
 4. **LOVE** otherwise. The account is covered on paper, but the cover was never built, so pull for love, not meta.
 
@@ -29,6 +29,7 @@ npm install
 npm run dev      # http://localhost:5173
 npm test         # verdict rule tests (vitest)
 npm run build    # typecheck + production build to dist/
+node scripts/build-prydwen-tiers.mjs   # refresh consensus tiers; pass a saved page if Prydwen blocks the fetch
 ```
 
 ## Architecture
@@ -36,7 +37,7 @@ npm run build    # typecheck + production build to dist/
 - **App:** Vite + React + TypeScript, one page, three screens (UID → roster → verdict)
 - **Proxy:** Vercel Edge Function that handles CORS, the `User-Agent` header, and caching
 - **Storage:** none server-side; localStorage remembers the last roster
-- **Data:** Enka.Network API plus a bundled character data store
+- **Data:** Enka.Network API plus bundled character data and a Prydwen consensus-tier snapshot
 
 ## Notes
 

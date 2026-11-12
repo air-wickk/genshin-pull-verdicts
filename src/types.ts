@@ -25,9 +25,8 @@ export interface Banner {
   roleTags: string[]
   /** Characters the banner character enables a strong team with. */
   pairings: string[]
-  /** Consensus rank from Prydwen's tier list (T0..T4), hand-updated with
-   *  the rest of the banner data. Optional: absent means no consensus
-   *  modifier is applied. */
+  /** Optional hand override for the consensus rank (T0..T5, Prydwen).
+   *  When absent, the generated snapshot src/data/tiers.json decides. */
   tier?: string
   startDate: string
   endDate: string

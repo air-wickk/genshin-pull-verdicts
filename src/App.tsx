@@ -4,6 +4,7 @@ import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
 import bannerData from './banners.json'
 import { verdict as computeVerdict } from './verdict'
+import { bannerTier } from './tiers'
 import { WishReveal } from './WishReveal'
 
 const banner = bannerData as Banner
@@ -136,6 +137,7 @@ interface UidScreenProps {
 
 function UidScreen({ onSubmit }: UidScreenProps) {
   const [uid, setUid] = useState('')
+  const consensus = bannerTier(banner)
 
   return (
     <section className="screen screen-uid">
@@ -152,8 +154,8 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
           )}
-          {banner.tier && (
-            <span className="banner-tier">Prydwen: {banner.tier}</span>
+          {consensus && (
+            <span className="banner-tier">Prydwen: {consensus}</span>
           )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>
@@ -581,23 +583,10 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
   const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
   const matching = roster.filter((character) => character.element === banner.element)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
-
-  // Splash art drifts toward the cursor, like a showcase you're leaning into.
-  const parallax = (event: React.MouseEvent<HTMLElement>) => {
-    if (REDUCE_MOTION) return
-    const rect = event.currentTarget.getBoundingClientRect()
-    event.currentTarget.style.setProperty(
-      '--mx',
-      String((event.clientX - rect.left) / rect.width - 0.5),
-    )
-    event.currentTarget.style.setProperty(
-      '--my',
-      String((event.clientY - rect.top) / rect.height - 0.5),
-    )
-  }
+  const consensus = bannerTier(banner)
 
   return (
-    <section className="screen screen-verdict" onMouseMove={parallax}>
+    <section className="screen screen-verdict">
       {!REDUCE_MOTION && (
         <WishReveal
           color={ELEMENT_HEX[banner.element]}
@@ -633,8 +622,8 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
           )}
-          {banner.tier && (
-            <span className="banner-tier">Prydwen: {banner.tier}</span>
+          {consensus && (
+            <span className="banner-tier">Prydwen: {consensus}</span>
           )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>

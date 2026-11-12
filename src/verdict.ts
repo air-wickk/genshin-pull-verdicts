@@ -1,17 +1,11 @@
 import type { Banner, Decision, RosterCharacter, Verdict } from './types'
 import { getRoles } from './roles'
+import { TOP_TIERS, WEAK_TIERS, bannerTier, getTier, tierRank } from './tiers'
 
 // A "strong" character is one that has been meaningfully invested in.
 // Tuned together with ROLES: this is the whole product, keep it readable.
 export const STRONG_LEVEL = 70
 export const PARTNER_LEVEL = 60
-
-// Consensus tier (hand-updated from Prydwen's tier list into banners.json
-// alongside the rest of the banner data). The tier never creates a
-// verdict on its own: it only tempers or reinforces the account-based
-// gap rule, so every verdict stays about the account.
-export const TOP_TIERS = ['T0', 'T0.5']
-export const WEAK_TIERS = ['T3', 'T4']
 
 // A character "covers" the banner when they share its element AND at least
 // one of its jobs. Role knowledge comes from ROLES; unknown roles are
@@ -37,9 +31,31 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
   const covering = roster.filter((character) => covers(character, banner))
 
   // Rule 1: a strong character already covers the banner's element AND
-  // main job? SKIP, and explain why a second copy adds nothing.
+  // main job? SKIP, and explain why a second copy adds nothing. One
+  // consensus check first: if the banner unit is Apex while the built
+  // cover is far below it (three rank steps, e.g. a T2 cover under a T0
+  // banner), the honest verdict softens to "only if you love them".
+  // The upgrade is real on paper, but replacing a built carry is a
+  // luxury, never a need. Closer ranks keep the sidegrade SKIP, and an
+  // unknown tier keeps it too: consensus never guesses.
   const strongCover = strong.find((character) => covers(character, banner))
   if (strongCover) {
+    const consensus = bannerTier(banner)
+    const coverTier = getTier(strongCover.name)
+    if (
+      consensus &&
+      coverTier &&
+      TOP_TIERS.includes(consensus) &&
+      tierRank(coverTier) - tierRank(consensus) >= 3
+    ) {
+      return {
+        decision: 'LOVE',
+        reasons: [
+          `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} on your account (${investment(strongCover)}).`,
+          `${banner.character} is consensus top-tier (Prydwen ${consensus}) while ${strongCover.name} sits at ${coverTier}, so the upgrade is real on paper. But replacing a built carry is a luxury, not a need: pull only if you love them.`,
+        ],
+      }
+    }
     const dupe =
       strongCover.constellation >= 3
         ? `They are heavily invested (C${strongCover.constellation}), so another copy of the same job adds almost nothing.`
@@ -79,15 +95,16 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     // the community rates weak is not advice, it's a trap. Downgrade to
     // "only if you love them" and say both facts. A top-ranked unit
     // filling a real gap is the opposite: say so, and reinforce.
+    const consensus = bannerTier(banner)
     let decision: Decision = 'PULL'
-    if (banner.tier && WEAK_TIERS.includes(banner.tier)) {
+    if (consensus && WEAK_TIERS.includes(consensus)) {
       reasons.push(
-        `Fair warning: consensus ranks ${banner.character} low (Prydwen tier ${banner.tier}), so filling the gap means paying for a weak unit. Only if you love them.`,
+        `Fair warning: consensus ranks ${banner.character} low (Prydwen tier ${consensus}), so filling the gap means paying for a weak unit. Only if you love them.`,
       )
       decision = 'LOVE'
-    } else if (banner.tier && TOP_TIERS.includes(banner.tier)) {
+    } else if (consensus && TOP_TIERS.includes(consensus)) {
       reasons.push(
-        `Consensus also ranks ${banner.character} at the top (Prydwen tier ${banner.tier}), so this is a strong unit filling a real gap.`,
+        `Consensus also ranks ${banner.character} at the top (Prydwen tier ${consensus}), so this is a strong unit filling a real gap.`,
       )
     }
     return { decision, reasons }

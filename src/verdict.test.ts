@@ -118,6 +118,52 @@ describe('verdict', () => {
     expect(verdict(roster, { ...banner, tier: 'T4' }).decision).toBe('SKIP')
   })
 
+  it('Rule 2: consensus from the tiers snapshot downgrades a gap-PULL', () => {
+    // Dehya carries no hand-set tier: the engine must read her T3 from
+    // the generated snapshot (src/data/tiers.json).
+    const dehya: Banner = { ...banner, character: 'Dehya' }
+    const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
+    const result = verdict(roster, dehya)
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('Prydwen tier T3')
+  })
+
+  it('Rule 2: consensus from the snapshot reinforces a gap-PULL', () => {
+    const mavuika: Banner = { ...banner, character: 'Mavuika' }
+    const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
+    const result = verdict(roster, mavuika)
+    expect(result.decision).toBe('PULL')
+    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen tier T0')
+  })
+
+  it('Rule 1: an Apex banner over a far-weaker built cover softens SKIP to LOVE', () => {
+    // The user case: a built Raiden Shogun (T2) covering while an Apex
+    // (T0) banner character shares her job. The upgrade is real, but it
+    // is a luxury, so the verdict becomes "only if you love them".
+    const mitya: Banner = {
+      character: 'Mitya',
+      element: 'Electro',
+      weaponType: 'Catalyst',
+      roleTags: ['on-field DPS'],
+      pairings: ['Yae Miko', 'Wriothesley', 'Cyno', 'Qiqi'],
+      startDate: '2026-11-04',
+      endDate: '2026-11-24',
+    }
+    const roster = [character({ name: 'Raiden Shogun', element: 'Electro', level: 80 })]
+    const result = verdict(roster, mitya)
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('Prydwen T0')
+    expect(result.reasons.join(' ')).toContain('sits at T2')
+  })
+
+  it('Rule 1: a close-tier built cover keeps the SKIP', () => {
+    // Arlecchino (T1) covering against an Apex banner is one rank step
+    // short of the soften threshold: a sidegrade is still a sidegrade.
+    const mavuika: Banner = { ...banner, character: 'Mavuika' }
+    const roster = [character({ name: 'Arlecchino', element: 'Pyro', level: 90 })]
+    expect(verdict(roster, mavuika).decision).toBe('SKIP')
+  })
+
   it('Rule 3: PULL and name the pairing when a banner partner is owned', () => {
     // Diluc covers Pyro on-field but is below the "strong" threshold, so
     // Rule 1 and Rule 2 pass through; owned Yelan tips it to PULL.
