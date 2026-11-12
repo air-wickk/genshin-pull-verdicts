@@ -24,6 +24,8 @@ export class RosterError extends Error {
 interface EnkaAvatar {
   avatarId: number
   propMap?: Record<string, { val?: number }>
+  /** Unlocked constellation talents, e.g. [241, 242] = Cyno at C2. */
+  talentIdList?: number[]
 }
 
 // Enka serves character art for UI icon keys at /ui/<icon>.png.
@@ -62,9 +64,15 @@ export async function getRoster(uid: string): Promise<
 
   return avatars.map((avatar) => ({
     id: String(avatar.avatarId),
-    // propMap 4001 = level, 1002 = constellation (Enka's fight-prop IDs).
-    // Values arrive as strings; the verdict engine compares them numerically.
+    // propMap 4001 = level (Enka's fight-prop ID). Values arrive as
+    // strings; the verdict engine compares them numerically.
     level: Number(avatar.propMap?.['4001']?.val ?? 1) || 1,
-    constellation: Number(avatar.propMap?.['1002']?.val ?? 0) || 0,
+    // Constellations come from talentIdList, one entry per unlocked
+    // constellation (empty list = C0). propMap 1002 is NOT constellation,
+    // despite looking like it: it is the ascension phase, which tracks
+    // level (A5 at Lv. 80) and once masqueraded as constellations here.
+    constellation: Array.isArray(avatar.talentIdList)
+      ? avatar.talentIdList.length
+      : 0,
   }))
 }
