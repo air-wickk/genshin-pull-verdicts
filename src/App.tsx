@@ -181,6 +181,13 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
               <li key={option.character} role="option" aria-selected={option.character === banner.character}>
                 <button
                   type="button"
+                  style={{
+                    borderLeft: `3px solid ${
+                      option.character === banner.character
+                        ? ELEMENT_COLORS[option.element]
+                        : 'transparent'
+                    }`,
+                  }}
                   onClick={() => {
                     onSelectBanner(option.character)
                     setMenuOpen(false)

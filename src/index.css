@@ -200,13 +200,16 @@ button.banner-control:focus-visible {
   border-top: 1px solid var(--line);
 }
 
+/* Every row holds a 3px left slot so the element-colored accent on the
+   selected row doesn't shift the text; color, not a marker, says which
+   banner is being judged against. */
 .banner-menu button {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-2);
-  padding: 10px 12px;
+  padding: 10px 12px 10px 9px;
   font: inherit;
   color: var(--text);
   text-align: left;
@@ -216,11 +219,6 @@ button.banner-control:focus-visible {
 .banner-menu button:hover,
 .banner-menu button:focus-visible {
   background: rgba(19, 26, 43, 0.8);
-}
-
-/* The banner currently being judged against gets a filled marker. */
-.banner-menu li[aria-selected='true'] button strong::after {
-  content: ' ✓';
 }
 
 input[type='text']::placeholder {
