@@ -1,14 +1,8 @@
-import characterData from './data/characters.json'
+import { CHARACTERS, enkaToRoster, type EnkaAvatar } from './enka'
+import type { RosterCharacter } from './types'
 
-export interface CharacterData {
-  name: string
-  element: string
-  icon?: string
-  weaponType?: string
-}
-
-// Bundled from Enka.Network's data store via scripts/build-enka-data.mjs.
-export const CHARACTERS = characterData as Record<string, CharacterData>
+export { CHARACTERS } from './enka'
+export type { CharacterData } from './enka'
 
 export type RosterErrorKind = 'private' | 'rate-limited' | 'network'
 
@@ -21,22 +15,13 @@ export class RosterError extends Error {
   }
 }
 
-interface EnkaAvatar {
-  avatarId: number
-  propMap?: Record<string, { val?: number }>
-  /** Unlocked constellation talents, e.g. [241, 242] = Cyno at C2. */
-  talentIdList?: number[]
-}
-
 // Enka serves character art for UI icon keys at /ui/<icon>.png.
 export function iconUrl(character: { id: string }): string {
   const data = CHARACTERS[character.id]
   return data?.icon ? `https://enka.network/ui/${data.icon}.png` : ''
 }
 
-export async function getRoster(uid: string): Promise<
-  Array<{ id: string; level: number; constellation: number }>
-> {
+export async function getRoster(uid: string): Promise<RosterCharacter[]> {
   let response: Response
   try {
     response = await fetch(`/api/uid/${uid}`)
@@ -62,17 +47,5 @@ export async function getRoster(uid: string): Promise<
     throw new RosterError('private')
   }
 
-  return avatars.map((avatar) => ({
-    id: String(avatar.avatarId),
-    // propMap 4001 = level (Enka's fight-prop ID). Values arrive as
-    // strings; the verdict engine compares them numerically.
-    level: Number(avatar.propMap?.['4001']?.val ?? 1) || 1,
-    // Constellations come from talentIdList, one entry per unlocked
-    // constellation (empty list = C0). propMap 1002 is NOT constellation,
-    // despite looking like it: it is the ascension phase, which tracks
-    // level (A5 at Lv. 80) and once masqueraded as constellations here.
-    constellation: Array.isArray(avatar.talentIdList)
-      ? avatar.talentIdList.length
-      : 0,
-  }))
+  return enkaToRoster(avatars)
 }

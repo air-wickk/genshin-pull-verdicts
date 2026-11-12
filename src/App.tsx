@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
+import { DECISION_CLASS, DECISION_LABEL } from './labels'
 import bannerData from './banners.json'
 import { verdict as computeVerdict } from './verdict'
 import { bannerTier } from './tiers'
@@ -46,18 +47,6 @@ const ELEMENT_COLORS: Record<ElementName, string> = {
   Geo: 'var(--geo)',
   None: 'var(--quiet)',
 }
-
-const DECISION_CLASS = {
-  PULL: 'pull',
-  SKIP: 'skip',
-  LOVE: 'love',
-} as const
-
-const DECISION_LABEL = {
-  PULL: 'PULL',
-  SKIP: 'SKIP',
-  LOVE: 'Only if you love them',
-} as const
 
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
@@ -486,15 +475,17 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
 interface ShareCardProps {
   verdictResult: Verdict
   decisionClass: 'pull' | 'skip' | 'love'
+  uid: string
 }
 
-function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
+function ShareCard({ verdictResult, decisionClass, uid }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [rendering, setRendering] = useState(false)
   const [failed, setFailed] = useState(false)
   // The rendered PNG, held open by the dialog. Null means closed.
   const [rendered, setRendered] = useState<{ dataUrl: string; blob: Blob } | null>(null)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  const [linkState, setLinkState] = useState<'idle' | 'copied' | 'failed'>('idle')
   // Writing an image to the clipboard is a Chromium/Firefox thing; Safari
   // only got it recently. Hide the button where it cannot work.
   const canCopy =
@@ -512,6 +503,7 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
       })
       const blob = await (await fetch(dataUrl)).blob()
       setCopyState('idle')
+      setLinkState('idle')
       setRendered({ dataUrl, blob })
     } catch (error) {
       // Render failures were invisible before; keep the button state but
@@ -533,13 +525,15 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
     return () => window.removeEventListener('keydown', onKey)
   }, [rendered])
 
-  // Opens the composer with the card's verdict pre-filled, plugging the
-  // site. The user edits the text before it posts, so this is a draft,
-  // never an auto-post.
+  // Opens the composer with the card's verdict pre-filled and a link to
+  // the share page, whose Open Graph tags render the result as the
+  // clickable preview card. The user edits the text before it posts, so
+  // this is a draft, never an auto-post.
+  const shareLink = `${window.location.origin}/share/${uid}`
+
   const shareOnX = () => {
     if (!rendered) return
-    const site = window.location.origin
-    const text = `Should I pull ${banner.character}? Verdict: ${DECISION_LABEL[verdictResult.decision]}. Check yours: ${site}`
+    const text = `Should I pull ${banner.character}? My verdict: ${DECISION_LABEL[verdictResult.decision]}. Check yours: ${shareLink}`
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
       '_blank',
@@ -557,6 +551,16 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
     } catch (error) {
       console.warn('Clipboard write failed:', error)
       setCopyState('failed')
+    }
+  }
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink)
+      setLinkState('copied')
+    } catch (error) {
+      console.warn('Clipboard write failed:', error)
+      setLinkState('failed')
     }
   }
 
@@ -605,6 +609,13 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
                       : 'Copy image'}
                 </button>
               )}
+              <button type="button" onClick={copyLink}>
+                {linkState === 'copied'
+                  ? 'Link copied ✓'
+                  : linkState === 'failed'
+                    ? 'Copy failed, try again'
+                    : 'Copy link'}
+              </button>
               <button type="button" onClick={download}>
                 Download
               </button>
@@ -635,6 +646,7 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
 
 interface VerdictScreenProps {
   roster: RosterCharacter[]
+  uid: string
   onBack: () => void
 }
 
@@ -655,7 +667,7 @@ function CharacterArt() {
   )
 }
 
-function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
+function VerdictScreen({ roster, uid, onBack }: VerdictScreenProps) {
   const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
   const matching = roster.filter((character) => character.element === banner.element)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
@@ -742,7 +754,7 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           </ul>
         </details>
       </div>
-      <ShareCard verdictResult={verdictResult} decisionClass={decisionClass} />
+      <ShareCard verdictResult={verdictResult} decisionClass={decisionClass} uid={uid} />
     </section>
   )
 }
@@ -771,18 +783,8 @@ export default function App() {
     setPhase('loading')
     try {
       const characters = await getRoster(targetUid)
-      const enriched: RosterCharacter[] = characters.map((entry) => {
-        const data = CHARACTERS[entry.id]
-        return {
-          id: entry.id,
-          name: data?.name ?? entry.id,
-          element: (data?.element ?? 'None') as ElementName,
-          level: entry.level,
-          constellation: entry.constellation,
-        }
-      })
-      setRoster(enriched)
-      saveRoster(targetUid, enriched)
+      setRoster(characters)
+      saveRoster(targetUid, characters)
       setPhase('roster')
     } catch (caught) {
       setError({
@@ -832,7 +834,7 @@ export default function App() {
         />
       )}
       {phase === 'verdict' && (
-        <VerdictScreen roster={roster} onBack={() => setPhase('roster')} />
+        <VerdictScreen roster={roster} uid={uid} onBack={() => setPhase('roster')} />
       )}
       <footer className="footnote">
         <p className="quiet">

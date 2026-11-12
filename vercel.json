@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/share/:uid", "destination": "/api/share/:uid" },
+    { "source": "/share/:uid/og.png", "destination": "/api/share-og/:uid" }
+  ]
+}

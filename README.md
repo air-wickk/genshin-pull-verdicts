@@ -22,6 +22,10 @@ Rules run in order, and the first match wins. A "strong" character is Lv. 70+, a
 
 Every verdict ships with its reasons. The rules are deliberately readable so players can argue with them.
 
+## Sharing
+
+Share verdict renders the 1200x630 card and opens an in-app dialog: post on X with a pre-filled draft, copy the image, copy the link, or download it. The draft links to `/share/{uid}`, two Vercel edge functions (`api/share/[uid].ts`, `api/share-og/[uid].ts`) that run the same rules engine server-side and serve the sharer's verdict as the tweet's large preview card (og:image, drawn with @vercel/og). Clicking the card opens the site. The embed only works on the deployed site; in dev the link goes nowhere.
+
 ## Development
 
 ```sh
@@ -36,6 +40,7 @@ node scripts/build-prydwen-tiers.mjs   # refresh consensus tiers; pass a saved p
 
 - **App:** Vite + React + TypeScript, one page, three screens (UID → roster → verdict)
 - **Proxy:** Vercel Edge Function that handles CORS, the `User-Agent` header, and caching
+- **Share:** Vercel Edge Functions that re-run the verdict server-side for tweet preview cards
 - **Storage:** none server-side; localStorage remembers the last roster
 - **Data:** Enka.Network API plus bundled character data and a Prydwen consensus-tier snapshot
 
