@@ -1006,16 +1006,65 @@ details.why ul {
   opacity: 0.85;
 }
 
-.share-foot {
+/* ---------- Share dialog (in-app sheet, opens after rendering) ---------- */
+
+/* The modal backdrop: dim and blur the page, like a native sheet. Sits
+   above the wish canvas (z-index 60) so it is the topmost layer. */
+.share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  background: rgba(8, 11, 22, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.share-dialog {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 2 * var(--space-3));
+  overflow-y: auto;
+  padding: var(--space-3);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius);
+  background: rgba(19, 26, 43, 0.85);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+  animation: rise-in 0.5s var(--ease-out-expo) backwards;
+}
+
+.share-close {
   position: absolute;
-  bottom: 40px;
-  left: 64px;
-  right: 64px;
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  font-size: 21px;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 6px 12px;
   color: var(--quiet);
+  background: none;
+  border: none;
+  font-size: 16px;
+}
+
+.share-close:hover {
+  color: var(--text);
+}
+
+.share-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--glass-line);
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 /* ---------- Footer ---------- */
@@ -1407,5 +1456,9 @@ button.primary:hover::after {
   .roster-card {
     animation: none;
     transition: none;
+  }
+
+  .share-dialog {
+    animation: none;
   }
 }

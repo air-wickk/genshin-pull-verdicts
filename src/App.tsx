@@ -490,14 +490,20 @@ interface ShareCardProps {
 
 function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [sharing, setSharing] = useState(false)
+  const [rendering, setRendering] = useState(false)
   const [failed, setFailed] = useState(false)
+  // The rendered PNG, held open by the dialog. Null means closed.
+  const [rendered, setRendered] = useState<{ dataUrl: string; blob: Blob } | null>(null)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  // Writing an image to the clipboard is a Chromium/Firefox thing; Safari
+  // only got it recently. Hide the button where it cannot work.
+  const canCopy =
+    typeof ClipboardItem === 'function' && 'write' in navigator.clipboard
 
-  const share = async () => {
+  const render = async () => {
     if (!cardRef.current) return
-    setSharing(true)
+    setRendering(true)
     setFailed(false)
-    const filename = `pull-verdicts-${banner.character.toLowerCase().replace(/\s+/g, '-')}.png`
     try {
       const dataUrl = await toPng(cardRef.current, {
         width: 1200,
@@ -505,41 +511,107 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
         pixelRatio: 1,
       })
       const blob = await (await fetch(dataUrl)).blob()
-      const file = new File([blob], filename, { type: 'image/png' })
-      // Real phones get the real share sheet (Telegram, Discord, camera
-      // roll); everywhere else falls back to a plain download.
-      if (navigator.canShare?.({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'Pull Verdicts',
-            text: `${banner.character}: ${DECISION_LABEL[verdictResult.decision]}`,
-          })
-        } catch (error) {
-          // User closed the share sheet; not a failure.
-          if ((error as DOMException).name !== 'AbortError') throw error
-        }
-        return
-      }
-      const link = document.createElement('a')
-      link.download = filename
-      link.href = dataUrl
-      link.click()
+      setCopyState('idle')
+      setRendered({ dataUrl, blob })
     } catch (error) {
       // Render failures were invisible before; keep the button state but
       // also say what actually went wrong in the console.
       console.warn('Share render failed:', error)
       setFailed(true)
     } finally {
-      setSharing(false)
+      setRendering(false)
     }
+  }
+
+  // Escape closes the dialog, like any native sheet.
+  useEffect(() => {
+    if (!rendered) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setRendered(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [rendered])
+
+  // Opens the composer with the card's verdict pre-filled, plugging the
+  // site. The user edits the text before it posts, so this is a draft,
+  // never an auto-post.
+  const shareOnX = () => {
+    if (!rendered) return
+    const site = window.location.origin
+    const text = `Should I pull ${banner.character}? Verdict: ${DECISION_LABEL[verdictResult.decision]}. Check yours: ${site}`
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+      '_blank',
+      'noopener,noreferrer',
+    )
+  }
+
+  const copyImage = async () => {
+    if (!rendered) return
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': rendered.blob }),
+      ])
+      setCopyState('copied')
+    } catch (error) {
+      console.warn('Clipboard write failed:', error)
+      setCopyState('failed')
+    }
+  }
+
+  const download = () => {
+    if (!rendered) return
+    const filename = `pull-verdicts-${banner.character.toLowerCase().replace(/\s+/g, '-')}.png`
+    const link = document.createElement('a')
+    link.download = filename
+    link.href = rendered.dataUrl
+    link.click()
   }
 
   return (
     <>
-      <button type="button" className="primary" onClick={share} disabled={sharing}>
-        {sharing ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
+      <button type="button" className="primary" onClick={render} disabled={rendering}>
+        {rendering ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
       </button>
+      {rendered && (
+        <div
+          className="share-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Share your verdict"
+          onClick={() => setRendered(null)}
+        >
+          <div className="share-dialog" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="share-close"
+              aria-label="Close"
+              onClick={() => setRendered(null)}
+            >
+              ✕
+            </button>
+            <img className="share-preview" src={rendered.dataUrl} alt="Verdict card preview" />
+            <div className="share-actions">
+              <button type="button" className="primary" onClick={shareOnX}>
+                Post on X
+              </button>
+              {canCopy && (
+                <button type="button" onClick={copyImage}>
+                  {copyState === 'copied'
+                    ? 'Copied ✓'
+                    : copyState === 'failed'
+                      ? 'Copy failed, try again'
+                      : 'Copy image'}
+                </button>
+              )}
+              <button type="button" onClick={download}>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* The staging wrapper holds the off-screen positioning. The rendered
           card inside it must position itself normally: html-to-image copies
           computed styles onto the clone, so a fixed -20000px card would be
@@ -555,10 +627,6 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
             ✦ {banner.character} · {banner.element} ✦
           </p>
           <p className="share-reason">{verdictResult.reasons[0]}</p>
-          <p className="share-foot">
-            <span>genshin wish, real verdict</span>
-            <span>{bannerDateLabel()}</span>
-          </p>
         </div>
       </div>
     </>
