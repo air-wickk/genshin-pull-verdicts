@@ -21,12 +21,8 @@ function json(body: string, init: { status: number; headers?: Record<string, str
   })
 }
 
-export default async function handler(request: Request): Promise<Response> {
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: CORS })
-  }
-
-  const uid = new URL(request.url).pathname.split('/').pop() ?? ''
+export async function GET(request: Request): Promise<Response> {
+  const uid = new URL(request.url, 'https://placeholder.com').pathname.split('/').pop() ?? ''
   if (!/^\d{9}$/.test(uid)) {
     return json(JSON.stringify({ error: 'UID must be 9 digits' }), { status: 400 })
   }
@@ -62,4 +58,8 @@ export default async function handler(request: Request): Promise<Response> {
     status: upstream.status,
     headers: { 'Cache-Control': cacheControl },
   })
+}
+
+export function OPTIONS(): Response {
+  return new Response(null, { status: 204, headers: CORS })
 }

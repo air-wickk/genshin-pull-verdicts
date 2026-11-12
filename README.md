@@ -1,30 +1,25 @@
 # Pull Verdicts
 
-**Should you pull on the current Genshin banner? Enter your UID and get a verdict (pull, skip, or only if you love them) with the reasons behind it.**
+**Should you pull on the current Genshin banner? Enter your UID, get a verdict — pull, skip, or only if you love them — with the reasons why.**
 
-This isn't a tier list. It's a verdict for *your* account, based on your public in-game showcase.
+Not a tier list: a verdict for *your* account, read from your public in-game showcase.
+
+## Status
+
+Working locally. Screenshots: TODO (needs a browser session). Live URL: TODO — see Deploy.
 
 ## How it works
 
-1. The player enters their game UID. No login, and only public showcase data is used.
-2. A server-side proxy calls [Enka.Network](https://enka.network), a free community API, and returns the showcase characters: names, elements, levels, and constellations.
-3. The app shows the roster for review. Players with a private or partial showcase can add characters by hand.
-4. A small rules engine (`src/verdict.ts`) compares the current banner character against the roster and returns a verdict with reasons, plus a shareable 1200x630 PNG.
-
-### The verdict rules
-
-Rules run in order, and the first match wins. A "strong" character is Lv. 70+, and a pairing partner counts at Lv. 60+. Cover ranks are constellation-weighted: Prydwen rates 4-stars at C6 and 5-stars at C0, so a cover below that basis plays a tier below its rating, one step per missing constellation (floored at T5).
-
-1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade. One consensus check: an Apex-tier (T0/T0.5) banner character over a built cover far below it (T1.5 or weaker, after the constellation weighting) softens the SKIP to "only if you love them", since the upgrade is real but replacing a built carry is a luxury.
-2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason. One consensus modifier (Prydwen ranks: a generated snapshot in `src/data/tiers.json`, optionally overridden per banner in `banners.json`) downgrades a gap-PULL to "only if you love them" for weak-tier units, and adds a reason for top-tier ones.
-3. **PULL** if the banner character pairs into a strong team with a character the player already owns.
-4. **LOVE** if the only cover was never built (under Lv. 70) but is worth building: close in rank to the banner, or top-tier itself ("build what you own"). **PULL** instead when the unbuilt cover is a straw cover, ranking well below an Apex banner once constellations are weighted (e.g. a C0 4-star rated T2 at C6): the gap is real, and the math is said out loud.
-
-Every verdict ships with its reasons. The rules are deliberately readable so players can argue with them.
-
-## Sharing
-
-Share verdict renders the 1200x630 card and opens an in-app dialog: post on X with a pre-filled draft, copy the image, copy the link, or download it. The draft links to `/share/{uid}?b={character}` (two Vercel edge functions, `api/share/[uid].ts` and `api/share-og/[uid].ts`), which run the same rules engine server-side for the chosen banner and serve the sharer's verdict as the tweet's large preview card (og:image, drawn with @vercel/og). Clicking the card opens the site with that banner preselected. The embed only works on the deployed site; in dev the link goes nowhere.
+1. Player enters their game UID. No login, public showcase data only.
+2. A server-side proxy calls [Enka.Network](https://enka.network), a free
+   community API, and returns the showcase characters: names, elements,
+   levels, constellations.
+3. The app shows the roster for review, with an add-by-hand fallback for
+   private or partial showcases.
+4. The current banner ships as a hand-updated data file (`src/banners.json`).
+5. A small rules engine (`src/verdict.ts`) compares the banner character
+   against the roster and returns a verdict with reasons, plus a shareable
+   1200x630 PNG.
 
 ## Development
 
@@ -33,22 +28,60 @@ npm install
 npm run dev      # http://localhost:5173
 npm test         # verdict rule tests (vitest)
 npm run build    # typecheck + production build to dist/
-node scripts/build-prydwen-tiers.mjs   # refresh consensus tiers; pass a saved page if Prydwen blocks the fetch
 ```
+
+In development, Vite's server proxy forwards `/api/uid/:uid` to
+`enka.network` with the required `User-Agent` header. In production, the
+Vercel Edge Function `api/uid/[uid].ts` does the same job and adds CORS
+headers plus `ttl`-aware caching.
+
+### Updating the banner data
+
+**Every game version (~6 weeks), update `src/banners.json` by hand**: the
+featured character, element, role tags, and pairing partners. There is no
+official banner API — this file is the one hand-maintained input, and a
+missed update means the app shows last version's banner. Character
+names/elements come from Enka's data store; refresh them after a new
+character releases with:
+
+```sh
+curl -o data/enka/characters.json https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/characters.json
+curl -o data/enka/loc.json https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/loc.json
+node scripts/build-enka-data.mjs
+```
+
+Tuning the verdicts means editing `src/verdict.ts` (thresholds, rule order)
+and `src/roles.ts` (per-character role tags). Community meta is opinion;
+source rules from [KeqingMains](https://keqingmains.com/) guides and let
+players disagree — every verdict shows its reasons for exactly that reason.
 
 ## Architecture
 
 - **App:** Vite + React + TypeScript, one page, three screens (UID → roster → verdict)
-- **Proxy:** Vercel Edge Function that handles CORS, the `User-Agent` header, and caching
-- **Share:** Vercel Edge Functions that re-run the verdict server-side for tweet preview cards
+- **Proxy:** Vercel Edge Function (`api/uid/[uid].ts`) — CORS, User-Agent, `ttl` cache
+- **Hosting:** Vercel free tier (frontend + function deploy together)
 - **Storage:** none server-side; localStorage remembers the last roster
-- **Data:** Enka.Network API plus bundled character data and a Prydwen consensus-tier snapshot
+- **Data:** Enka.Network API (no key) + bundled character data store
 
-## Notes
+The proxy exists because Enka sends no CORS headers and asks clients for a
+custom `User-Agent`, which browsers cannot set. Verified 2026-11-10.
 
-- Each game version runs two limited character banners per phase; the banner card on the home screen is the picker (click it for the list). The list in `src/banners.json` is hand-updated every version.
-- Only characters on a player's public showcase are visible; otherwise, add them by hand.
-- Meta is opinion. Every verdict shows its reasons so players can disagree.
-- No logins, ever.
+## Deploy
 
-*Unofficial fan project, not affiliated with HoYoverse.*
+1. Push this repo to GitHub.
+2. Create a Vercel account via **Continue with GitHub** (no new password).
+3. Import the repo in Vercel — framework preset **Vite** is detected
+   automatically, and `api/` functions deploy with it. No configuration
+   needed.
+4. The live URL appears; put it in this README.
+
+## Honest risks
+
+- Enka only sees characters a player put on their **public showcase**;
+  private or partial showcases get the add-by-hand fallback.
+- Enka is fan-run with dynamic rate limits; if it goes down, the app pauses
+  with it. The proxy's `ttl`-aware caching keeps us well inside limits.
+- Banner data is hand-updated each version (see above).
+- Meta is opinion. The verdicts show their reasons; players tell you when
+  they're wrong.
+- No logins, ever. Public showcase data only.

@@ -1,3 +1,4 @@
+
 // Vercel Edge Function: the public share page for one UID's verdict.
 // A tweet drafts {origin}/share/{uid}; when it posts, X's crawler hits
 // this page, reads the Open Graph tags, and renders the sharer's actual
@@ -14,8 +15,6 @@ export const runtime = 'edge'
 const UPSTREAM = 'https://enka.network/api/uid'
 const USER_AGENT = 'pull-verdicts/0.1'
 
-// The page's palette mirrors src/index.css so the card and the site read
-// as one product. (CSS variables can't be shared: this page is raw HTML.)
 const COLORS = {
   bg: '#0d1220',
   surface: '#131a2b',
@@ -37,17 +36,19 @@ function escapeHtml(text: string): string {
 }
 
 function fetchUpstream(uid: string): Promise<Response> {
-  return fetch(`${UPSTREAM}/${uid}`, { headers: { 'User-Agent': USER_AGENT } })
+  return fetch(`${UPSTREAM}/${uid}`, {
+    headers: { 'User-Agent': USER_AGENT },
+  })
 }
 
-export default async function handler(request: Request): Promise<Response> {
-  const url = new URL(request.url)
+export async function GET(request: Request): Promise<Response> {
+  const url = new URL(request.url, 'https://placeholder.com')
   const uid = url.pathname.split('/').pop() ?? ''
+
   if (!/^\d{9}$/.test(uid)) {
     return new Response('UID must be 9 digits', { status: 400 })
   }
-  // The og card must match the banner the sharer judged: the tweet drafts
-  // ?b=<slug>. Absent or unknown slug falls back to today's active banner.
+
   const banner = bannerBySlug(url.searchParams.get('b'))
 
   const title = `My pull verdict for ${banner.character}`
@@ -57,29 +58,60 @@ export default async function handler(request: Request): Promise<Response> {
   try {
     upstream = await fetchUpstream(uid)
   } catch {
-    return html({ title, body: notice('Could not reach Enka.Network, try again soon.', cta) })
+    return html({
+      title,
+      body: notice('Could not reach Enka.Network, try again soon.', cta),
+    })
   }
 
-  // 404 = showcase private or empty; 429 = rate limited. The link still
-  // resolves, so give humans a plain page with no result card.
   if (upstream.status === 404) {
-    return html({ title, body: notice('That showcase is private or empty, so there is no verdict to show.', cta) })
+    return html({
+      title,
+      body: notice(
+        'That showcase is private or empty, so there is no verdict to show.',
+        cta,
+      ),
+    })
   }
+
   if (upstream.status === 429) {
-    return html({ title, body: notice('Enka.Network rate limit, try again soon.', cta) })
+    return html({
+      title,
+      body: notice('Enka.Network rate limit, try again soon.', cta),
+    })
   }
+
   if (!upstream.ok) {
-    return html({ title, body: notice('Something went wrong reading the showcase, try again soon.', cta) })
+    return html({
+      title,
+      body: notice(
+        'Something went wrong reading the showcase, try again soon.',
+        cta,
+      ),
+    })
   }
 
   let payload: { avatarInfoList?: EnkaAvatar[] }
   try {
     payload = (await upstream.json()) as { avatarInfoList?: EnkaAvatar[] }
   } catch {
-    return html({ title, body: notice('Could not read the showcase, try again soon.', cta) })
+    return html({
+      title,
+      body: notice('Could not read the showcase, try again soon.', cta),
+    })
   }
-  if (!Array.isArray(payload.avatarInfoList) || payload.avatarInfoList.length === 0) {
-    return html({ title, body: notice('That showcase is private or empty, so there is no verdict to show.', cta) })
+
+  if (
+    !Array.isArray(payload.avatarInfoList) ||
+    payload.avatarInfoList.length === 0
+  ) {
+    return html({
+      title,
+      body: notice(
+        'That showcase is private or empty, so there is no verdict to show.',
+        cta,
+      ),
+    })
   }
 
   const verdict = computeVerdict(enkaToRoster(payload.avatarInfoList), banner)
@@ -108,8 +140,6 @@ export default async function handler(request: Request): Promise<Response> {
   })
 }
 
-// The landing page: verdict up top, one call to action. The Open Graph
-// tags are the point; the body just has to hold up for humans.
 function html(page: {
   title: string
   description?: string
@@ -117,6 +147,7 @@ function html(page: {
   body: string
 }): Response {
   const { title, description, image, body } = page
+
   const tags = [
     `<meta property="og:title" content="${escapeHtml(title)}" />`,
     `<meta property="og:type" content="website" />`,
@@ -124,7 +155,9 @@ function html(page: {
     description
       ? `<meta property="og:description" content="${escapeHtml(description)}" />`
       : '',
-    image ? `<meta property="og:image" content="${escapeHtml(image)}" />` : '',
+    image
+      ? `<meta property="og:image" content="${escapeHtml(image)}" />`
+      : '',
   ]
     .filter(Boolean)
     .join('\n    ')
@@ -191,7 +224,6 @@ function html(page: {
   )
 }
 
-// The no-verdict body: same shell, plain message, same CTA.
 function notice(message: string, cta: string): string {
   return `
       <main>
