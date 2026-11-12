@@ -128,6 +128,19 @@ export const ROLES: Record<string, RoleTag[]> = {
   // Phase 2 rerun characters also missing from the bundled store.
   'Zibai': ['on-field DPS'],
   'Linnea': ['off-field DPS', 'support', 'healer'],
+  // Characters the data rebuild resolved from the Enka store; roles
+  // per Prydwen/KQM/Mobalytics guides and HoYoverse's own role notes.
+  'Columbina': ['off-field DPS', 'support'],
+  'Illuga': ['support'],
+  'Varka': ['on-field DPS'],
+  'Lohen': ['on-field DPS'],
+  'Nicole': ['support'],
+  'Prune': ['off-field DPS', 'support'],
+  'Sandrone': ['on-field DPS'],
+  'Vodyanitsa': ['support', 'healer'],
+  'Vesna': ['on-field DPS'],
+  'Alyosha': ['support', 'healer'],
+  'Odette': ['off-field DPS', 'support'],
 }
 
 export function getRoles(name: string): RoleTag[] | undefined {

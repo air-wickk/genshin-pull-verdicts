@@ -13,9 +13,8 @@
   },
   "10000005": {
     "name": "Traveler",
-    "element": "Anemo",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+    "element": "None",
+    "icon": "UI_AvatarIcon_Side_PlayerBoy"
   },
   "10000006": {
     "name": "Lisa",
@@ -25,9 +24,8 @@
   },
   "10000007": {
     "name": "Traveler",
-    "element": "Anemo",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+    "element": "None",
+    "icon": "UI_AvatarIcon_Side_PlayerGirl"
   },
   "10000014": {
     "name": "Barbara",
@@ -617,14 +615,6 @@
     "icon": "UI_AvatarIcon_Side_Ineffa",
     "weaponType": "WEAPON_POLE"
   },
-  "10000117": {
-    "name": "10000117",
-    "element": "None"
-  },
-  "10000118": {
-    "name": "10000118",
-    "element": "None"
-  },
   "10000119": {
     "name": "Lauma",
     "element": "Dendro",
@@ -661,132 +651,94 @@
     "icon": "UI_AvatarIcon_Side_Jahoda",
     "weaponType": "WEAPON_BOW"
   },
-  "10000901": {
-    "name": "Mavuika (Trial)",
-    "element": "Pyro",
-    "icon": "UI_AvatarIcon_Side_Mavuika",
-    "weaponType": "WEAPON_CLAYMORE"
-  },
-  "10000902": {
-    "name": "Hu Tao (Trial)",
-    "element": "Pyro",
-    "icon": "UI_AvatarIcon_Side_Hutao",
-    "weaponType": "WEAPON_POLE"
-  },
-  "10000903": {
-    "name": "Ineffa",
-    "element": "Electro",
-    "icon": "UI_AvatarIcon_Side_Ineffa",
-    "weaponType": "WEAPON_POLE"
-  },
-  "10000904": {
+  "10000125": {
     "name": "Columbina",
-    "element": "Pyro",
+    "element": "Hydro",
     "icon": "UI_AvatarIcon_Side_Columbina",
     "weaponType": "WEAPON_CATALYST"
   },
-  "10000998": {
-    "name": "10000998",
-    "element": "None"
+  "10000126": {
+    "name": "Zibai",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Zibai",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
   },
-  "10000999": {
-    "name": "10000999",
-    "element": "None"
+  "10000127": {
+    "name": "Illuga",
+    "element": "Geo",
+    "icon": "UI_AvatarIcon_Side_Illuga",
+    "weaponType": "WEAPON_POLE"
   },
-  "11000046": {
-    "name": "Pyro Archon (Test)",
-    "element": "Cryo",
-    "icon": "UI_AvatarIcon_Side_Qin",
+  "10000128": {
+    "name": "Varka",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Varka",
     "weaponType": "WEAPON_CLAYMORE"
   },
-  "11000998": {
-    "name": "11000998",
-    "element": "None"
+  "10000129": {
+    "name": "Lohen",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Lohen",
+    "weaponType": "WEAPON_POLE"
   },
-  "11000999": {
-    "name": "11000999",
-    "element": "None"
-  },
-  "10000005-502": {
-    "name": "Traveler",
-    "element": "Pyro",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000005-503": {
-    "name": "Traveler",
-    "element": "Hydro",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000005-504": {
-    "name": "Traveler",
-    "element": "Anemo",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000005-506": {
-    "name": "Traveler",
+  "10000130": {
+    "name": "Linnea",
     "element": "Geo",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+    "icon": "UI_AvatarIcon_Side_Linnea",
+    "weaponType": "WEAPON_BOW"
   },
-  "10000005-507": {
-    "name": "Traveler",
-    "element": "Electro",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000005-508": {
-    "name": "Traveler",
-    "element": "Dendro",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000005-501": {
-    "name": "Traveler",
-    "element": "None",
-    "icon": "UI_AvatarIcon_Side_PlayerBoy"
-  },
-  "10000007-701": {
-    "name": "Traveler",
-    "element": "None",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl"
-  },
-  "10000007-702": {
-    "name": "Traveler",
+  "10000131": {
+    "name": "Nicole",
     "element": "Pyro",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+    "icon": "UI_AvatarIcon_Side_Nicole",
+    "weaponType": "WEAPON_CATALYST"
   },
-  "10000007-703": {
-    "name": "Traveler",
-    "element": "Hydro",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
-  },
-  "10000007-704": {
-    "name": "Traveler",
+  "10000132": {
+    "name": "Prune",
     "element": "Anemo",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+    "icon": "UI_AvatarIcon_Side_Prune",
+    "weaponType": "WEAPON_CATALYST"
   },
-  "10000007-706": {
-    "name": "Traveler",
-    "element": "Geo",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
-    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  "10000133": {
+    "name": "Sandrone",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_MarionetteNew",
+    "weaponType": "WEAPON_CLAYMORE"
   },
-  "10000007-707": {
-    "name": "Traveler",
+  "10000136": {
+    "name": "Mitya",
     "element": "Electro",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+    "icon": "UI_AvatarIcon_Side_Mitya",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000137": {
+    "name": "Valeriy",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Valeriy",
     "weaponType": "WEAPON_SWORD_ONE_HAND"
   },
-  "10000007-708": {
-    "name": "Traveler",
-    "element": "Dendro",
-    "icon": "UI_AvatarIcon_Side_PlayerGirl",
+  "10000140": {
+    "name": "Vodyanitsa",
+    "element": "Hydro",
+    "icon": "UI_AvatarIcon_Side_Vodyanitsa",
+    "weaponType": "WEAPON_CATALYST"
+  },
+  "10000143": {
+    "name": "Vesna",
+    "element": "Anemo",
+    "icon": "UI_AvatarIcon_Side_Vesna",
+    "weaponType": "WEAPON_SWORD_ONE_HAND"
+  },
+  "10000148": {
+    "name": "Alyosha",
+    "element": "Electro",
+    "icon": "UI_AvatarIcon_Side_Alyosha",
+    "weaponType": "WEAPON_POLE"
+  },
+  "10000150": {
+    "name": "Odette",
+    "element": "Cryo",
+    "icon": "UI_AvatarIcon_Side_Odette",
     "weaponType": "WEAPON_SWORD_ONE_HAND"
   }
 }
