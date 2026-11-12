@@ -152,34 +152,75 @@ input[type='text'] {
   border-radius: var(--radius);
 }
 
-/* The banner picker on the UID screen: same visual language as the UID
-   field, so the two controls read as one form. */
-.banner-select {
+/* The banner card is itself the control: it keeps its read-only look but
+   opens the banner list pinned under it. */
+.banner-picker {
+  position: relative;
+}
+
+button.banner-control {
   width: 100%;
-  max-width: 420px;
-  padding: 10px 14px;
+  text-align: left;
   font: inherit;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
   cursor: pointer;
   transition:
     border-color 0.2s ease-out,
     background-color 0.2s ease-out;
 }
 
-.banner-select:hover,
-.banner-select:focus-visible {
+button.banner-control:hover,
+button.banner-control:focus-visible {
   border-color: rgba(232, 230, 227, 0.4);
   background: rgba(19, 26, 43, 0.8);
 }
 
-/* Options render in the browser's own popup; the dark surface keeps the
-   closed control on-theme either way. */
-.banner-select option {
+.banner-caret {
+  margin-left: 6px;
+  font-size: 10px;
+}
+
+/* The open list: pinned under the card, same surface as the card. */
+.banner-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
   background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(4, 8, 18, 0.5);
+}
+
+.banner-menu li + li {
+  border-top: 1px solid var(--line);
+}
+
+.banner-menu button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 10px 12px;
+  font: inherit;
   color: var(--text);
+  text-align: left;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.banner-menu button:hover,
+.banner-menu button:focus-visible {
+  background: rgba(19, 26, 43, 0.8);
+}
+
+/* The banner currently being judged against gets a filled marker. */
+.banner-menu li[aria-selected='true'] button strong::after {
+  content: ' ✓';
 }
 
 input[type='text']::placeholder {

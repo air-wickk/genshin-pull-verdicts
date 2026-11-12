@@ -123,41 +123,83 @@ interface UidScreenProps {
 
 function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps) {
   const [uid, setUid] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const pickerRef = useRef<HTMLDivElement>(null)
   const consensus = bannerTier(banner)
+
+  // Click anywhere outside the picker closes the menu; Escape does too.
+  useEffect(() => {
+    if (!menuOpen) return
+    const close = (event: PointerEvent) => {
+      if (!pickerRef.current?.contains(event.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', close)
+    return () => document.removeEventListener('pointerdown', close)
+  }, [menuOpen])
 
   return (
     <section className="screen screen-uid">
       <h1 className="hero">Should you pull?</h1>
-      <select
-        className="banner-select"
-        value={banner.character}
-        onChange={(event) => onSelectBanner(event.target.value)}
-        aria-label="Banner to judge against"
-      >
-        {banners.map((option) => (
-          <option key={option.character} value={option.character}>
-            {option.character} ({formatDate(option.startDate)} to{' '}
-            {formatDate(option.endDate)})
-          </option>
-        ))}
-      </select>
       <div
-        className="banner-card"
-        style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
+        className="banner-picker"
+        ref={pickerRef}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') setMenuOpen(false)
+        }}
       >
-        <span>
-          <strong>{banner.character}</strong>{' '}
-          <span className="quiet">
-            {banner.element} · {banner.weaponType.toLowerCase()}
+        <button
+          type="button"
+          className="banner-card banner-control"
+          style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
+          aria-expanded={menuOpen}
+          aria-haspopup="listbox"
+          aria-label={`Judging against ${banner.character}. Open the banner list`}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span>
+            <strong>{banner.character}</strong>{' '}
+            <span className="quiet">
+              {banner.element} · {banner.weaponType.toLowerCase()}
+            </span>
+            {banner.bannerName && (
+              <span className="banner-name">{banner.bannerName}</span>
+            )}
+            {consensus && (
+              <span className="banner-tier">Prydwen: {consensus}</span>
+            )}
           </span>
-          {banner.bannerName && (
-            <span className="banner-name">{banner.bannerName}</span>
-          )}
-          {consensus && (
-            <span className="banner-tier">Prydwen: {consensus}</span>
-          )}
-        </span>
-        <span className="quiet">{bannerDateLabel(banner)}</span>
+          <span className="quiet">
+            {bannerDateLabel(banner)}
+            <span className="banner-caret" aria-hidden="true">
+              ▾
+            </span>
+          </span>
+        </button>
+        {menuOpen && (
+          <ul className="banner-menu" role="listbox" aria-label="Banners">
+            {banners.map((option) => (
+              <li key={option.character} role="option" aria-selected={option.character === banner.character}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectBanner(option.character)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <span>
+                    <strong>{option.character}</strong>{' '}
+                    <span className="quiet">
+                      {option.element} · {option.weaponType.toLowerCase()}
+                    </span>
+                  </span>
+                  <span className="quiet">
+                    {formatDate(option.startDate)} to {formatDate(option.endDate)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <StaleBannerNote banner={banner} />
       <p className="art-caption">

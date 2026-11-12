@@ -46,7 +46,7 @@ node scripts/build-prydwen-tiers.mjs   # refresh consensus tiers; pass a saved p
 
 ## Notes
 
-- Each game version runs two limited character banners per phase; the dropdown on the home screen picks between them. The list in `src/banners.json` is hand-updated every version.
+- Each game version runs two limited character banners per phase; the banner card on the home screen is the picker (click it for the list). The list in `src/banners.json` is hand-updated every version.
 - Only characters on a player's public showcase are visible; otherwise, add them by hand.
 - Meta is opinion. Every verdict shows its reasons so players can disagree.
 - No logins, ever.
