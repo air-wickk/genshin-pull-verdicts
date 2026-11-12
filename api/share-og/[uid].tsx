@@ -7,11 +7,11 @@
 
 import type { ReactElement } from 'react'
 import { ImageResponse } from '@vercel/og'
-import { verdict as computeVerdict } from '../../src/verdict'
-import { enkaToRoster, type EnkaAvatar } from '../../src/enka'
-import { DECISION_LABEL } from '../../src/labels'
-import { bannerBySlug } from '../../src/banners'
-import type { Banner } from '../../src/types'
+import { verdict as computeVerdict } from '../../src/verdict.js'
+import { enkaToRoster, type EnkaAvatar } from '../../src/enka.js'
+import { DECISION_LABEL } from '../../src/labels.js'
+import { bannerBySlug } from '../../src/banners.js'
+import type { Banner } from '../../src/types.js'
 
 export const config = { runtime: 'edge' }
 const UPSTREAM = 'https://enka.network/api/uid'

@@ -5,10 +5,10 @@
 // by api/share-og/[uid].ts, served at /share/{uid}/og.png.
 // Humans land on a minimal page with the verdict and a call to action.
 
-import { verdict as computeVerdict } from '../../src/verdict'
-import { enkaToRoster, type EnkaAvatar } from '../../src/enka'
-import { DECISION_CLASS, DECISION_LABEL } from '../../src/labels'
-import { bannerBySlug, bannerSlug } from '../../src/banners'
+import { verdict as computeVerdict } from '../../src/verdict.js'
+import { enkaToRoster, type EnkaAvatar } from '../../src/enka.js'
+import { DECISION_CLASS, DECISION_LABEL } from '../../src/labels.js'
+import { bannerBySlug, bannerSlug } from '../../src/banners.js'
 
 export const config = { runtime: 'edge' }
 const UPSTREAM = 'https://enka.network/api/uid'
