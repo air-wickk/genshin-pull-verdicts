@@ -20,6 +20,8 @@ export interface Banner {
   character: string
   element: ElementName
   weaponType: string
+  /** The poetic in-game banner title, e.g. "Myriad Patterns Unfold". */
+  bannerName?: string
   roleTags: string[]
   /** Characters the banner character enables a strong team with. */
   pairings: string[]

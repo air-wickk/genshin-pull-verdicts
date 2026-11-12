@@ -58,6 +58,15 @@ const DECISION_LABEL = {
   LOVE: 'Only if you love them',
 } as const
 
+// Little fortunes for the UID screen, Genshin wish-screen energy.
+const FLAVOR_LINES = [
+  'May your 50/50s be won.',
+  'Pity is a promise.',
+  'Tonight the stars favor the bold.',
+  'Even the Tsaritsa budgets her primogems.',
+  'Every wish is a question. This is an answer.',
+]
+
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
 // Art URLs. The banner character can be newer than the bundled data store
@@ -136,6 +145,10 @@ interface UidScreenProps {
 
 function UidScreen({ onSubmit }: UidScreenProps) {
   const [uid, setUid] = useState('')
+  const flavor = useMemo(
+    () => FLAVOR_LINES[Math.floor(Math.random() * FLAVOR_LINES.length)],
+    [],
+  )
 
   return (
     <section className="screen screen-uid">
@@ -149,6 +162,9 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           <span className="quiet">
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
+          {banner.bannerName && (
+            <span className="banner-name">{banner.bannerName}</span>
+          )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>
       </div>
@@ -179,6 +195,7 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           Check my roster
         </button>
       </form>
+      <p className="flavor">{flavor}</p>
       <p className="quiet">Public showcase data only.</p>
     </section>
   )
@@ -576,9 +593,29 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
   const matching = roster.filter((character) => character.element === banner.element)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
 
+  // Splash art drifts toward the cursor, like a showcase you're leaning into.
+  const parallax = (event: React.MouseEvent<HTMLElement>) => {
+    if (REDUCE_MOTION) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty(
+      '--mx',
+      String((event.clientX - rect.left) / rect.width - 0.5),
+    )
+    event.currentTarget.style.setProperty(
+      '--my',
+      String((event.clientY - rect.top) / rect.height - 0.5),
+    )
+  }
+
   return (
-    <section className="screen screen-verdict">
-      {!REDUCE_MOTION && <WishReveal color={ELEMENT_HEX[banner.element]} flash={DECISION_FLASH[verdictResult.decision]} />}
+    <section className="screen screen-verdict" onMouseMove={parallax}>
+      {!REDUCE_MOTION && (
+        <WishReveal
+          color={ELEMENT_HEX[banner.element]}
+          flash={DECISION_FLASH[verdictResult.decision]}
+          celebrate={verdictResult.decision !== 'SKIP'}
+        />
+      )}
       {!REDUCE_MOTION && (
         <div
           className="wish-flash"
@@ -586,6 +623,11 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           aria-hidden="true"
         />
       )}
+      <div className="astral" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
@@ -599,6 +641,9 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           <span className="quiet">
             {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
+          {banner.bannerName && (
+            <span className="banner-name">{banner.bannerName}</span>
+          )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>
       </div>

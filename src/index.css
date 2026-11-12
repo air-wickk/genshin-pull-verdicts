@@ -373,7 +373,10 @@ button.text:hover {
 }
 
 .screen > * {
-  animation: rise-in 0.7s var(--ease-out-expo) var(--delay, 0s) both;
+  /* backwards, not both: after the entrance finishes the animation must
+     hand transform control back to the element, or the splash art's
+     parallax translate would be pinned at translateY(0) forever. */
+  animation: rise-in 0.7s var(--ease-out-expo) var(--delay, 0s) backwards;
 }
 
 .screen > :nth-child(1) { --delay: 0s; }
@@ -791,6 +794,19 @@ button.remove:focus-visible {
   margin: 0 auto -36px;
   position: relative;
   z-index: 1;
+}
+
+/* On the verdict screen the splash art leans toward the cursor, like a
+   showcase you're leaning into. --mx/--my come from the screen's
+   mousemove handler; reduced motion never sets them, so the default 0
+   holds the art still. */
+.screen-verdict .character-art {
+  transform: translate3d(
+    calc(var(--mx, 0) * 12px),
+    calc(var(--my, 0) * 9px),
+    0
+  );
+  transition: transform 0.25s var(--ease-soft);
 }
 
 /* The verdict card composes in layers: an element-colored glow at the top
@@ -1266,8 +1282,102 @@ button.primary:hover::after {
     0 8px 26px rgba(0, 0, 0, 0.35);
 }
 
+/* ---------- The astral wheel ---------- */
+
+/* Three slow star-chart rings behind the verdict, centered on the same
+   50% / 42% viewport point where the wish burst lands, so the wheel and
+   the explosion share one axis. Each ring carries one small star, so
+   the slow rotation reads as orbit, not texture. */
+.astral {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.astral i {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  translate: -50% -50%;
+  border: 1px dashed rgba(245, 200, 107, 0.13);
+  border-radius: 50%;
+  animation: astral-spin var(--spin, 120s) linear infinite;
+}
+
+/* The riding star sits at the ring's top edge and travels as it spins. */
+.astral i::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  translate: -50% 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f5c86b;
+  box-shadow: 0 0 12px rgba(245, 200, 107, 0.8);
+  opacity: 0.8;
+}
+
+.astral i:nth-child(1) {
+  width: 340px;
+  height: 340px;
+  --spin: 80s;
+}
+
+.astral i:nth-child(2) {
+  width: 520px;
+  height: 520px;
+  --spin: 130s;
+  border-color: rgba(245, 200, 107, 0.09);
+  animation-direction: reverse;
+}
+
+.astral i:nth-child(3) {
+  width: 700px;
+  height: 700px;
+  --spin: 170s;
+}
+
+@keyframes astral-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* ---------- Banner name and flavor lines ---------- */
+
+/* The poetic in-game banner title sits under the character line. The
+   column layout only applies when a title exists, so banners without
+   one keep the single-line card. */
+.banner-card > span:first-child:has(.banner-name) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.banner-name {
+  font-size: 12px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #f5c86b;
+  opacity: 0.9;
+}
+
+/* The UID screen's fortune: quiet, gold, italic, like a wish-screen
+   loading tip. */
+.flavor {
+  font-style: italic;
+  color: #f5c86b;
+  opacity: 0.75;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shooting-stars {
+  .shooting-stars,
+  .astral {
     display: none;
   }
 
@@ -1275,6 +1385,11 @@ button.primary:hover::after {
   .load-star,
   .roster-card {
     animation: none;
+    transition: none;
+  }
+
+  .screen-verdict .character-art {
+    transform: none;
     transition: none;
   }
 }

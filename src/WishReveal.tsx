@@ -12,7 +12,8 @@ import { useEffect, useRef } from 'react'
 //
 // The burst color telegraphs the decision like wish colors do: gold for
 // PULL/LOVE, cold blue for SKIP. Particles always mix in the banner
-// character's element color.
+// character's element color. PULL/LOVE get the full 5-star celebration
+// (130 particles, rays, echo ring); SKIP is a small, cold, honest pop.
 const VEIL_IN_MS = 350
 const DROP_START_MS = 100
 const DROP_END_MS = 1400
@@ -45,9 +46,11 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 export function WishReveal({
   color,
   flash,
+  celebrate,
 }: {
   color: string
   flash: string
+  celebrate: boolean
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -184,16 +187,17 @@ export function WishReveal({
         }
       }
 
-      // Act 3: the burst.
+      // Act 3: the burst. A PULL/LOVE detonates; a SKIP is a modest pop,
+      // the same grammar, less fire.
       if (t >= BURST_MS && !spawned) {
         spawned = true
-        spawn(130, 40, 380)
+        spawn(celebrate ? 130 : 70, 40, celebrate ? 380 : 260)
       }
 
       const bt = t - BURST_MS
 
-      // Light rays shooting outward.
-      if (bt >= 0 && bt < RAYS_MS) {
+      // Light rays shooting outward (celebration-grade wishes only).
+      if (celebrate && bt >= 0 && bt < RAYS_MS) {
         const rp = bt / RAYS_MS
         ctx.lineWidth = 2
         ctx.lineCap = 'round'
@@ -217,7 +221,8 @@ export function WishReveal({
         ctx.arc(burstX, burstY, 12 + easeOut(rp) * 200, 0, Math.PI * 2)
         ctx.stroke()
       }
-      if (bt >= 0 && bt < RING2_MS) {
+      // Wide slow gold echo, only worth a celebration.
+      if (celebrate && bt >= 0 && bt < RING2_MS) {
         const rp = bt / RING2_MS
         ctx.strokeStyle = withAlpha(gold, (1 - rp) * 0.35)
         ctx.lineWidth = 1
@@ -262,7 +267,7 @@ export function WishReveal({
 
     raf = requestAnimationFrame(frame)
     return () => cancelAnimationFrame(raf)
-  }, [color, flash])
+  }, [color, flash, celebrate])
 
   return <canvas ref={canvasRef} className="wish-canvas" aria-hidden="true" />
 }

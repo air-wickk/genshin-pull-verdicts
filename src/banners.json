@@ -3,6 +3,7 @@
   "character": "Mitya",
   "element": "Electro",
   "weaponType": "Catalyst",
+  "bannerName": "Myriad Patterns Unfold",
   "roleTags": ["on-field DPS", "support"],
   "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
   "startDate": "2026-11-04",
