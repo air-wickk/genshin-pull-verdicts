@@ -33,6 +33,13 @@ export interface Banner {
   /** Optional hand override for the consensus rank (T0..T5, Prydwen).
    *  When absent, the generated snapshot src/data/tiers.json decides. */
   tier?: string
+  /** Horizontal correction for the verdict-screen splash art, as a
+   *  fraction of the displayed art width, positive = right. Splash art is
+   *  auto-corrected by pixel analysis (src/artCenter.ts); this hand value
+   *  is only needed for the rare art that defeats the analysis, such as
+   *  one where translucent effects overlay the character or a companion
+   *  creature shares the frame's opaque mass. */
+  artShift?: number
   startDate: string
   endDate: string
 }

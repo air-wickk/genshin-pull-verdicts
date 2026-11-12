@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
+import { subjectShift } from './artCenter'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
 import { DECISION_CLASS, DECISION_LABEL } from './labels'
 import {
@@ -159,7 +160,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
           <span>
             <strong>{banner.character}</strong>{' '}
             <span className="quiet">
-              {banner.element} ┬╖ {banner.weaponType.toLowerCase()}
+              {banner.element} · {banner.weaponType.toLowerCase()}
             </span>
             {banner.bannerName && (
               <span className="banner-name">{banner.bannerName}</span>
@@ -171,7 +172,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
           <span className="quiet">
             {bannerDateLabel(banner)}
             <span className="banner-caret" aria-hidden="true">
-              Γû╛
+              ▾
             </span>
           </span>
         </button>
@@ -196,7 +197,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
                   <span>
                     <strong>{option.character}</strong>{' '}
                     <span className="quiet">
-                      {option.element} ┬╖ {option.weaponType.toLowerCase()}
+                      {option.element} · {option.weaponType.toLowerCase()}
                     </span>
                   </span>
                   <span className="quiet">
@@ -246,9 +247,9 @@ function LoadingScreen({ uid }: { uid: string }) {
   return (
     <section className="screen">
       <span className="load-star" aria-hidden="true">
-        Γ£ª
+        ✦
       </span>
-      <p className="quiet">Reading showcase for UID {uid}ΓÇª</p>
+      <p className="quiet">Reading showcase for UID {uid}…</p>
       <ul className="roster-grid" aria-hidden="true">
         {Array.from({ length: 6 }, (_, i) => (
           <li key={i} className="roster-card">
@@ -290,7 +291,7 @@ function ErrorScreen({ error, onManual, onRetry, onBack }: ErrorScreenProps) {
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ΓåÉ Change UID
+        ← Change UID
       </button>
       <h1>{copy.title}</h1>
       <p>{copy.body}</p>
@@ -314,7 +315,7 @@ function ConstellationPips({ count }: { count: number }) {
     <span className="pips" role="img" aria-label={`Constellation ${count}`}>
       {Array.from({ length: 6 }, (_, i) => (
         <span key={i} className={i < count ? 'pip filled' : 'pip'}>
-          Γ£ª
+          ✦
         </span>
       ))}
     </span>
@@ -333,7 +334,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ΓåÉ Change UID
+        ← Change UID
       </button>
       <h1>Your showcase</h1>
       <p className="quiet">UID {uid}</p>
@@ -368,7 +369,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
         ))}
       </ul>
       <p className="quiet">
-        {roster.length} characters ┬╖{' '}
+        {roster.length} characters ·{' '}
         {new Set(roster.map((character) => character.element)).size} elements
         covered
       </p>
@@ -428,11 +429,11 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ΓåÉ Back
+        ← Back
       </button>
       <h1>Add characters by hand</h1>
       <p className="quiet">
-        UID {uid} ┬╖ start typing a name, then add each character on your account.
+        UID {uid} · start typing a name, then add each character on your account.
       </p>
       <form
         className="field manual-form"
@@ -505,7 +506,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
                     aria-label={character.element}
                   />
                   <span className="quiet">
-                    Lv. {character.level} ┬╖ C{character.constellation}
+                    Lv. {character.level} · C{character.constellation}
                   </span>
                 </div>
               </div>
@@ -517,7 +518,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
                 }
                 aria-label={`Remove ${character.name}`}
               >
-                ├ù
+                ×
               </button>
             </li>
           ))}
@@ -637,7 +638,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
   return (
     <>
       <button type="button" className="primary" onClick={render} disabled={rendering}>
-        {rendering ? 'RenderingΓÇª' : failed ? 'Rendering failed, try again' : 'Share verdict'}
+        {rendering ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
       </button>
       {rendered && (
         <div
@@ -654,7 +655,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               aria-label="Close"
               onClick={() => setRendered(null)}
             >
-              Γ£ò
+              ✕
             </button>
             <img className="share-preview" src={rendered.dataUrl} alt="Verdict card preview" />
             <div className="share-actions">
@@ -664,7 +665,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               {canCopy && (
                 <button type="button" onClick={copyImage}>
                   {copyState === 'copied'
-                    ? 'Copied Γ£ô'
+                    ? 'Copied ✓'
                     : copyState === 'failed'
                       ? 'Copy failed, try again'
                       : 'Copy image'}
@@ -672,7 +673,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               )}
               <button type="button" onClick={copyLink}>
                 {linkState === 'copied'
-                  ? 'Link copied Γ£ô'
+                  ? 'Link copied ✓'
                   : linkState === 'failed'
                     ? 'Copy failed, try again'
                     : 'Copy link'}
@@ -696,7 +697,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
             {DECISION_LABEL[verdictResult.decision]}
           </p>
           <p className="share-character">
-            Γ£ª {banner.character} ┬╖ {banner.element} Γ£ª
+            ✦ {banner.character} · {banner.element} ✦
           </p>
           <p className="share-reason">{verdictResult.reasons[0]}</p>
         </div>
@@ -712,19 +713,297 @@ interface VerdictScreenProps {
   onBack: () => void
 }
 
+// A slow ambient drift of banner-element motes behind the sky, the way
+// the official wish screen breathes element color around the character.
+// Canvas rather than DOM nodes so dozens of glows cost one paint, and
+// time-based motion so a tab switch can't teleport the motes.
+const MOTE_COUNT = 26
+const MOTE_FADE_MS = 1200
+
+function hexToRgb(hex: string): [number, number, number] {
+  const value = parseInt(hex.slice(1), 16)
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255]
+}
+
+function mixColor(from: string, to: string, t: number): string {
+  const [r1, g1, b1] = hexToRgb(from)
+  const [r2, g2, b2] = hexToRgb(to)
+  const lerp = (a: number, b: number) => Math.round(a + (b - a) * t)
+  return `rgb(${lerp(r1, r2)}, ${lerp(g1, g2)}, ${lerp(b1, b2)})`
+}
+
+function ElementDrift({ element }: { element: ElementName }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  // The color blend lives in a ref so a banner switch never restarts the
+  // loop or reshuffles the motes: the glows just fade to the new color.
+  const blendRef = useRef({
+    from: ELEMENT_HEX[element],
+    to: ELEMENT_HEX[element],
+    start: 0,
+  })
+
+  // Follow the selected banner: resume the fade from wherever it
+  // currently is, so a quick flip mid-fade stays continuous.
+  useEffect(() => {
+    const blend = blendRef.current
+    const now = performance.now()
+    const progress = Math.min((now - blend.start) / MOTE_FADE_MS, 1)
+    blend.from = mixColor(blend.from, blend.to, progress)
+    blend.to = ELEMENT_HEX[element]
+    blend.start = now
+  }, [element])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const context = canvas.getContext('2d')
+    if (!context) return
+
+    let width = 0
+    let height = 0
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const resize = () => {
+      width = window.innerWidth
+      height = window.innerHeight
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      context.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const motes = Array.from({ length: MOTE_COUNT }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      radius: 1.2 + Math.random() * 3.2,
+      rise: 10 + Math.random() * 20, // px per second, upward
+      sway: 8 + Math.random() * 16, // horizontal sway amplitude, px
+      swaySpeed: 0.2 + Math.random() * 0.5,
+      phase: Math.random() * Math.PI * 2,
+      alpha: 0.2 + Math.random() * 0.35,
+    }))
+
+    const easeOut = (t: number) => 1 - (1 - t) * (1 - t)
+    let raf = 0
+    let last = performance.now()
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05)
+      last = now
+      const blend = blendRef.current
+      const progress = Math.min((now - blend.start) / MOTE_FADE_MS, 1)
+      const color = mixColor(blend.from, blend.to, easeOut(progress))
+      context.clearRect(0, 0, width, height)
+      for (const mote of motes) {
+        mote.y -= (mote.rise * dt) / Math.max(height, 1)
+        if (mote.y < -0.02) {
+          mote.y = 1.02
+          mote.x = Math.random()
+        }
+        const x =
+          (mote.x + Math.sin((now / 1000) * mote.swaySpeed + mote.phase) * mote.sway / Math.max(width, 1)) * width
+        const y = mote.y * height
+        const glow = context.createRadialGradient(x, y, 0, x, y, mote.radius * 3.5)
+        glow.addColorStop(0, color)
+        glow.addColorStop(1, 'transparent')
+        context.globalAlpha = mote.alpha
+        context.fillStyle = glow
+        context.beginPath()
+        context.arc(x, y, mote.radius * 3.5, 0, Math.PI * 2)
+        context.fill()
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return <canvas className="element-drift" ref={canvasRef} aria-hidden="true" />
+}
+
 function CharacterArt({ banner }: { banner: Banner }) {
   // Splash art for newer characters; the side icon always exists.
   const [splashFailed, setSplashFailed] = useState(false)
+  // Calculated subject lean (see src/artCenter.ts), 0 until the splash has
+  // loaded and been analyzed.
+  const [autoShift, setAutoShift] = useState(0)
 
   const src = splashFailed ? sideIconUrl(banner.character) : splashUrl(banner.character)
+  // A hand override (Banner.artShift) wins; otherwise the art's own pixels
+  // decide. The analysis needs a wide splash: square side icons (the
+  // fallback art) are busts, already centered by construction.
+  const artShift = banner.artShift ?? autoShift
+
+  useEffect(() => {
+    setAutoShift(0)
+    if (splashFailed) return
+    let cancelled = false
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.src = src
+    image
+      .decode()
+      .then(() => {
+        if (cancelled) return
+        if (image.naturalWidth / image.naturalHeight < 1.8) return
+        // Analysis runs on a small sample; proportions are all it needs.
+        const width = 160
+        const height = Math.max(1, Math.round((width * image.naturalHeight) / image.naturalWidth))
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const context = canvas.getContext('2d', { willReadFrequently: true })
+        if (!context) return
+        context.drawImage(image, 0, 0, width, height)
+        try {
+          setAutoShift(subjectShift(context.getImageData(0, 0, width, height).data, width, height))
+        } catch {
+          // Tainted canvas (CORS): the art simply stays uncorrected.
+        }
+      })
+      .catch(() => {
+        // Load failure: the img's own onError handles the fallback.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [src, splashFailed])
 
   return (
-    <img
-      className="character-art"
-      src={src}
-      alt={`${banner.character} art`}
-      crossOrigin="anonymous"
-      onError={() => setSplashFailed(true)}
+    <>
+      {/* The same splash blown up, blurred and dimmed: it paints the
+          column's empty sides with the banner's own imagery and color. */}
+      <AmbientArt src={src} shift={artShift} />
+      <div className="art-stage">
+        <img
+          className="character-art"
+          src={src}
+          alt={`${banner.character} art`}
+          crossOrigin="anonymous"
+          onError={() => setSplashFailed(true)}
+          style={{ '--art-shift': `${artShift * 100}%` } as React.CSSProperties}
+        />
+      </div>
+    </>
+  )
+}
+
+// The ambient layer is pre-blurred into a canvas rather than CSS-blurred
+// on an img: Chromium rasterizes a CSS filter after the element's first
+// visible paint, so a CSS-blurred img shows unblurred for a frame and
+// then snaps to blurred, which reads as a bug. Drawing with ctx.filter
+// means the first pixel ever painted of this layer is already blurred.
+// A low-resolution bitmap keeps the draw cheap (blur hides the lost
+// detail anyway), and the canvas carries no CSS filter, so its fade-in
+// cannot drop the effect either.
+const AMBIENT_SCALE = 0.34 // bitmap resolution relative to the viewport
+const AMBIENT_BLUR = 56 // intended blur, in screen pixels
+
+function canvasFilterSupported(): boolean {
+  try {
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    if (!context) return false
+    context.filter = 'blur(1px)'
+    return context.filter === 'blur(1px)'
+  } catch {
+    return false
+  }
+}
+
+const CANVAS_BLUR = canvasFilterSupported()
+
+function AmbientArt({ src, shift = 0 }: { src: string; shift?: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    setReady(false)
+    if (!CANVAS_BLUR) return
+    let cancelled = false
+    let image: HTMLImageElement | null = null
+
+    const draw = () => {
+      const canvas = canvasRef.current
+      if (!canvas || !image || !image.naturalWidth) return
+      const context = canvas.getContext('2d')
+      if (!context) return
+      const width = Math.max(1, Math.round(window.innerWidth * AMBIENT_SCALE))
+      const height = Math.max(1, Math.round(window.innerHeight * AMBIENT_SCALE))
+      canvas.width = width
+      canvas.height = height
+      const blur = AMBIENT_BLUR * AMBIENT_SCALE
+      const bleed = Math.ceil(blur * 2)
+      context.filter = `blur(${blur}px)`
+      // Cover math, with bleed so the blur never samples past the draw
+      // into transparency at the viewport edges. The vertical 0.2 offset
+      // matches the old object-position: 50% 20% framing.
+      const boxWidth = width + bleed * 2
+      const boxHeight = height + bleed * 2
+      const scale = Math.max(
+        boxWidth / image.naturalWidth,
+        boxHeight / image.naturalHeight,
+      )
+      const drawWidth = image.naturalWidth * scale
+      const drawHeight = image.naturalHeight * scale
+      // Track the sharp art's subject nudge: the blurred fill must sit
+      // under the same character, not the frame center. The sharp art is
+      // stage-height tall at the image's own aspect, so its width (and
+      // thus the shift in screen px) follows from that.
+      const stageHeight = Math.min(Math.max(window.innerHeight * 0.66, 340), 720)
+      const artWidth = stageHeight * (image.naturalWidth / image.naturalHeight)
+      const dx = shift * artWidth * AMBIENT_SCALE
+      context.drawImage(
+        image,
+        (boxWidth - drawWidth) / 2 - bleed + dx,
+        (boxHeight - drawHeight) * 0.2 - bleed,
+        drawWidth,
+        drawHeight,
+      )
+      context.filter = 'none'
+      setReady(true)
+    }
+
+    const loaded = () => {
+      if (cancelled) return
+      draw()
+      window.addEventListener('resize', draw)
+    }
+    image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.src = src
+    image.onload = loaded
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('resize', draw)
+    }
+  }, [src])
+
+  if (!CANVAS_BLUR) {
+    // Browsers without canvas filter (older Safari) keep the CSS-blurred
+    // img; the compositor flash there is rare and beats losing the
+    // ambient layer entirely.
+    return (
+      <img
+        className="character-ambient character-ambient-fallback"
+        src={src}
+        alt=""
+        aria-hidden="true"
+        crossOrigin="anonymous"
+      />
+    )
+  }
+
+  return (
+    <canvas
+      className="character-ambient character-ambient-canvas"
+      ref={canvasRef}
+      aria-hidden="true"
+      style={ready ? undefined : { visibility: 'hidden', opacity: 0 }}
     />
   )
 }
@@ -760,7 +1039,7 @@ function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
         <i />
       </div>
       <button type="button" className="text" onClick={onBack}>
-        ΓåÉ Back to roster
+        ← Back to roster
       </button>
       <CharacterArt banner={banner} />
       <div
@@ -770,7 +1049,7 @@ function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
         <span>
           <strong>{banner.character}</strong>{' '}
           <span className="quiet">
-            {banner.element} ┬╖ {banner.weaponType.toLowerCase()}
+            {banner.element} · {banner.weaponType.toLowerCase()}
           </span>
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
@@ -882,6 +1161,7 @@ export default function App() {
         <i />
         <i />
       </div>
+      {!REDUCE_MOTION && <ElementDrift element={banner.element} />}
       {phase === 'uid' && (
         <UidScreen
           onSubmit={fetchRoster}
@@ -930,7 +1210,7 @@ export default function App() {
       )}
       <footer className="footnote">
         <p className="quiet">
-          Pull Verdicts ┬╖ not affiliated with HoYoverse ┬╖ verdicts are opinions,
+          Pull Verdicts · not affiliated with HoYoverse · verdicts are opinions,
           reasons included
         </p>
       </footer>

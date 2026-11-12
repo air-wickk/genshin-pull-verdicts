@@ -35,7 +35,7 @@ describe('verdict', () => {
     ]
     const result = verdict(roster, banner)
     expect(result.decision).toBe('SKIP')
-    expect(result.reasons[1]).toContain('heavily invested')
+    expect(result.reasons[1]).toContain('a lot into them')
   })
 
   it('Rule 1: a bare cover is called a sidegrade', () => {
@@ -65,14 +65,14 @@ describe('verdict', () => {
     ]
     const result = verdict(roster, banner)
     expect(result.decision).toBe('PULL')
-    expect(result.reasons[0]).toContain('gap')
+    expect(result.reasons[0]).toContain('would fill that slot')
   })
 
   it('Rule 2: a young account gets the early-roster reason too', () => {
     const roster = [character({ name: 'Unknown', element: 'Hydro', level: 90 })]
     const result = verdict(roster, banner)
     expect(result.decision).toBe('PULL')
-    expect(result.reasons.some((reason) => reason.includes('still young'))).toBe(true)
+    expect(result.reasons.some((reason) => reason.includes('still early'))).toBe(true)
   })
 
   it('Rule 2: same element but the wrong job is still a named gap', () => {
@@ -80,13 +80,13 @@ describe('verdict', () => {
     const roster = [character({ name: 'Xiangling', element: 'Pyro', level: 90 })]
     const result = verdict(roster, banner)
     expect(result.decision).toBe('PULL')
-    expect(result.reasons[1]).toContain('1 Pyro character, but none with the on-field DPS job')
+    expect(result.reasons[1]).toContain('1 Pyro character, but none that cover on-field DPS')
   })
 
   it('Rule 2: zero same-element characters is stated plainly', () => {
     const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
     const result = verdict(roster, banner)
-    expect(result.reasons[1]).toContain('zero Pyro characters')
+    expect(result.reasons[1]).toContain('own any Pyro characters')
   })
 
   it('Rule 2: a consensus-weak banner downgrades the gap-PULL to LOVE', () => {
@@ -95,14 +95,14 @@ describe('verdict', () => {
     const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
     const result = verdict(roster, { ...banner, tier: 'T4' })
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('Prydwen tier T4')
+    expect(result.reasons.join(' ')).toContain('Prydwen has Arlecchino at T4')
   })
 
   it('Rule 2: a top-tier banner reinforces the gap-PULL with a reason', () => {
     const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
     const result = verdict(roster, { ...banner, tier: 'T0' })
     expect(result.decision).toBe('PULL')
-    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen tier T0')
+    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen also has Arlecchino at T0')
   })
 
   it('Rule 2: a mid-tier banner changes nothing', () => {
@@ -125,7 +125,7 @@ describe('verdict', () => {
     const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
     const result = verdict(roster, dehya)
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('Prydwen tier T3')
+    expect(result.reasons.join(' ')).toContain('Prydwen has Dehya at T3')
   })
 
   it('Rule 2: consensus from the snapshot reinforces a gap-PULL', () => {
@@ -133,7 +133,7 @@ describe('verdict', () => {
     const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
     const result = verdict(roster, mavuika)
     expect(result.decision).toBe('PULL')
-    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen tier T0')
+    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen also has Mavuika at T0')
   })
 
   it('Rule 1: an Apex banner over a far-weaker built cover softens SKIP to LOVE', () => {
@@ -152,8 +152,8 @@ describe('verdict', () => {
     const roster = [character({ name: 'Raiden Shogun', element: 'Electro', level: 80 })]
     const result = verdict(roster, mitya)
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('Prydwen T0')
-    expect(result.reasons.join(' ')).toContain('sits at T2')
+    expect(result.reasons.join(' ')).toContain('rated T0 on Prydwen')
+    expect(result.reasons.join(' ')).toContain('plays closer to T2')
   })
 
   it('Rule 1: a close-tier built cover keeps the SKIP', () => {
@@ -225,9 +225,9 @@ describe('verdict', () => {
     ]
     const result = verdict(roster, zibai)
     expect(result.decision).toBe('PULL')
-    expect(result.reasons.join(' ')).toContain('rates them T2 at C6')
-    expect(result.reasons.join(' ')).toContain('play at best like T5')
-    expect(result.reasons.join(' ')).toContain('Prydwen T0')
+    expect(result.reasons.join(' ')).toContain("Prydwen's T2 rating assumes C6")
+    expect(result.reasons.join(' ')).toContain("they're closer to T5")
+    expect(result.reasons.join(' ')).toContain('rated T0 on Prydwen')
   })
 
   it('Rule 1: a C0 4-star cover plays below its rating, softening an Apex SKIP', () => {
@@ -242,8 +242,8 @@ describe('verdict', () => {
     ]
     const result = verdict(roster, { ...banner, tier: 'T0' })
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('rates them T3 at C6')
-    expect(result.reasons.join(' ')).toContain('sits at T5')
+    expect(result.reasons.join(' ')).toContain("Prydwen's T3 rating assumes C6")
+    expect(result.reasons.join(' ')).toContain("they're closer to T5")
   })
 
   it('Rule 1: a C6 4-star cover counts at its full rating, no discount note', () => {
@@ -258,8 +258,8 @@ describe('verdict', () => {
     ]
     const result = verdict(roster, { ...banner, tier: 'T0' })
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('sits at T3')
-    expect(result.reasons.join(' ')).not.toContain('fully constellated')
+    expect(result.reasons.join(' ')).toContain('plays closer to T3')
+    expect(result.reasons.join(' ')).not.toContain('assumes C6')
   })
 
   it('Rule 4: an unbuilt top-tier cover says build instead of buy', () => {
@@ -268,13 +268,13 @@ describe('verdict', () => {
     const roster = [character({ name: 'Mavuika', element: 'Pyro', level: 65 })]
     const result = verdict(roster, { ...banner, tier: 'T0' })
     expect(result.decision).toBe('LOVE')
-    expect(result.reasons.join(' ')).toContain('building them likely beats buying')
+    expect(result.reasons.join(' ')).toContain('building them will likely do more')
   })
 
   it('Rule 4: a 5-star straw cover is named without a constellation note', () => {
     const roster = [character({ name: 'Diluc', element: 'Pyro', level: 50 })]
     const result = verdict(roster, { ...banner, tier: 'T0' })
     expect(result.decision).toBe('PULL')
-    expect(result.reasons.join(' ')).toContain('They rate T3 on Prydwen')
+    expect(result.reasons.join(' ')).toContain('Prydwen has them at T3')
   })
 })

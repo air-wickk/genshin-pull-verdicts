@@ -153,9 +153,18 @@ input[type='text'] {
 }
 
 /* The banner card is itself the control: it keeps its read-only look but
-   opens the banner list pinned under it. */
+   opens the banner list pinned under it.
+
+   z-index 2 on purpose: while the entrance animation runs, opacity < 1
+   and filter make this a stacking context, which traps the menu's
+   z-index 5 inside it; the later-in-DOM caption and form, themselves
+   animating (opacity < 1 paints them as if positioned at z-index 0),
+   would then cover the open menu and real clicks on its options would
+   fall through to the form. An explicit z-index above that stratum
+   keeps the menu clickable in every phase of the animation. */
 .banner-picker {
   position: relative;
+  z-index: 2;
 }
 
 button.banner-control {
@@ -606,6 +615,7 @@ input[type='text']:focus-visible,
   .bloom,
   .bloom::before,
   .screen > *,
+  .character-art,
   .screen-verdict .verdict-word,
   .screen-verdict .verdict-card > :not(.verdict-word) {
     animation: none;
@@ -858,32 +868,112 @@ button.remove:focus-visible {
    sized by height so the character reads large on every device, centered
    on the column axis, and painted into the sky layer (z-index -1, the
    same plane as the stars and the astral wheel) so the glass cards float
-   over it and pick it up through their backdrop blur. */
-.character-art {
-  display: block;
+   over it and pick it up through their backdrop blur. A slow float keeps
+   it alive the way motionsite heroes are.
+
+   Structure: the stage is a normal flow block that owns the vertical
+   rhythm (its height plus the negative bottom margin lets the banner
+   card ride up over the art's lower edge). The img itself is absolutely
+   positioned against that stage and centered with the canonical
+   oversized-hero pattern, left: 50% + translate: -50%: the first pins
+   the box's left edge to the stage's horizontal center, the second
+   shifts it back by half its own width, so the box's center lands on
+   the stage's center no matter how wide the art is. Absolute positioning
+   takes the static-position and auto-margin interactions that made the
+   old relative-offset version fragile out of the equation entirely. */
+.art-stage {
   position: relative;
+  height: clamp(340px, 66vh, 720px);
+  margin-bottom: -240px;
+}
+
+.character-art {
+  position: absolute;
+  top: 0;
   left: 50%;
-  translate: -50% 0;
-  height: clamp(300px, 52vh, 540px);
+  /* -50% centers the box; var(--art-shift) is the per-character subject
+     nudge (fraction of the art's own width, set inline from
+     Banner.artShift), so a character who stands off-center inside the
+     official frame can be brought to the stage's center without touching
+     the centering mechanism itself. */
+  translate: calc(-50% + var(--art-shift, 0%)) 0;
+  height: 100%;
   width: auto;
   max-width: none;
-  margin: 0 auto -180px;
   z-index: -1;
   pointer-events: none;
+  animation: art-float 9s ease-in-out infinite;
   /* A radial mask tapers every edge of the splash into the night, so
      the art dissolves instead of ending at a box edge, and the drop
      shadow follows the transparent silhouette rather than a rectangle. */
   -webkit-mask-image: radial-gradient(
-    ellipse 62% 60% at 50% 42%,
-    black 45%,
-    transparent 88%
+    ellipse 66% 62% at 50% 42%,
+    black 48%,
+    transparent 90%
   );
   mask-image: radial-gradient(
-    ellipse 62% 60% at 50% 42%,
-    black 45%,
-    transparent 88%
+    ellipse 66% 62% at 50% 42%,
+    black 48%,
+    transparent 90%
   );
   filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
+}
+
+@keyframes art-float {
+  /* The keyframes must repeat the centering shift (with the per-character
+     --art-shift nudge): a running animation overrides the element's own
+     translate property, so the static value alone would never show. */
+  0%,
+  100% {
+    translate: calc(-50% + var(--art-shift, 0%)) 0;
+  }
+  50% {
+    translate: calc(-50% + var(--art-shift, 0%)) -12px;
+  }
+}
+
+/* The same splash blown up past the column and blurred: it fills the
+   viewport's empty sides with the banner's own imagery so the art feels
+   full-bleed like a motionsite hero, with the sharp art riding on top.
+   Painted under the stars (z-index -2). Shared shell; the blur itself
+   lives on the element variant (baked into the canvas, CSS on the
+   fallback img), so the fade-in can never show an unblurred frame. */
+.character-ambient {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.45;
+  transition: opacity 1.2s ease-out;
+  -webkit-mask-image: radial-gradient(
+    ellipse 85% 80% at 50% 40%,
+    black 40%,
+    transparent 95%
+  );
+  mask-image: radial-gradient(
+    ellipse 85% 80% at 50% 40%,
+    black 40%,
+    transparent 95%
+  );
+}
+
+/* Old-Safari fallback: the blur happens in CSS, on the img itself. */
+.character-ambient-fallback {
+  object-fit: cover;
+  object-position: 50% 20%;
+  transform: scale(1.06);
+  filter: blur(56px) saturate(140%) brightness(0.8);
+}
+
+/* The banner-element motes (see ElementDrift): one canvas on the sky
+   plane, behind the character art by DOM order. */
+.element-drift {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* The verdict card composes in layers: an element-colored glow at the top

@@ -42,7 +42,7 @@ function ratingNote(character: RosterCharacter): string | null {
   const tier = getTier(character.name)
   const rank = ratedRank(character)
   if (!tier || rank === undefined) return null
-  return `Prydwen rates them ${tier} at C6 (4-stars are rated fully constellated); at C${character.constellation} they play at best like ${rankName(rank)}.`
+  return `Prydwen's ${tier} rating assumes C6 for 4-stars. At C${character.constellation} they're closer to ${rankName(rank)}.`
 }
 
 // The character's Prydwen tier as a rank index, discounted for missing
@@ -86,23 +86,23 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
       coverRank - tierRank(consensus) >= 3
     ) {
       const reasons = [
-        `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} on your account (${investment(strongCover)}).`,
+        `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} (${investment(strongCover)}).`,
       ]
       const note = ratingNote(strongCover)
       if (note) reasons.push(note)
       reasons.push(
-        `${banner.character} is consensus top-tier (Prydwen ${consensus}) while ${strongCover.name} sits at ${rankName(coverRank)} on your account, so the upgrade is real on paper. But replacing a built carry is a luxury, not a need: pull only if you love them.`,
+        `${banner.character} is rated ${consensus} on Prydwen, and ${strongCover.name} plays closer to ${rankName(coverRank)} here. It would be an upgrade, but you don't need one. Pull only if you want them.`,
       )
       return { decision: 'LOVE', reasons }
     }
     const dupe =
       strongCover.constellation >= 3
-        ? `They are heavily invested (C${strongCover.constellation}), so another copy of the same job adds almost nothing.`
-        : 'A second character with the same element and job is a sidegrade, not an upgrade.'
+        ? `You've put a lot into them (C${strongCover.constellation}), so a second one for the same job adds very little.`
+        : 'Another character with the same element and job would be a sidegrade.'
     return {
       decision: 'SKIP',
       reasons: [
-        `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} on your account (${investment(strongCover)}).`,
+        `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} (${investment(strongCover)}).`,
         dupe,
       ],
     }
@@ -116,16 +116,16 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     )
     const partial =
       elementMates.length === 0
-        ? `You own zero ${banner.element} characters.`
-        : `You own ${elementMates.length} ${banner.element} ${elementMates.length === 1 ? 'character' : 'characters'}, but none with the ${banner.roleTags[0]} job.`
+        ? `You don't own any ${banner.element} characters.`
+        : `You have ${elementMates.length} ${banner.element} ${elementMates.length === 1 ? 'character' : 'characters'}, but none that cover ${banner.roleTags[0]}.`
     const reasons = [
-      `Nobody on your roster covers ${banner.element} ${banner.roleTags[0]} yet. ${banner.character} fills that gap.`,
+      `Nobody on your roster covers ${banner.element} ${banner.roleTags[0]}. ${banner.character} would fill that slot.`,
       partial,
     ]
     const young = strong.length <= 2
     if (young) {
       reasons.push(
-        `Your roster is still young (${strong.length} invested ${strong.length === 1 ? 'character' : 'characters'}), and a limited 5-star carries an early account further than a mature one.`,
+        `Your roster is still early (${strong.length} invested ${strong.length === 1 ? 'character' : 'characters'}), and a limited 5-star goes further on a young account.`,
       )
     }
 
@@ -138,12 +138,12 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     let decision: Decision = 'PULL'
     if (consensus && WEAK_TIERS.includes(consensus)) {
       reasons.push(
-        `Fair warning: consensus ranks ${banner.character} low (Prydwen tier ${consensus}), so filling the gap means paying for a weak unit. Only if you love them.`,
+        `Prydwen has ${banner.character} at ${consensus}, so you'd be spending on a weak unit to fill the gap. Only pull if you love them.`,
       )
       decision = 'LOVE'
     } else if (consensus && TOP_TIERS.includes(consensus)) {
       reasons.push(
-        `Consensus also ranks ${banner.character} at the top (Prydwen tier ${consensus}), so this is a strong unit filling a real gap.`,
+        `Prydwen also has ${banner.character} at ${consensus}, so this is a strong unit for a gap you actually have.`,
       )
     }
     return { decision, reasons }
@@ -160,8 +160,8 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     return {
       decision: 'PULL',
       reasons: [
-        `${banner.character} enables a strong team with ${partner.name}, who you already own (${investment(partner)}).`,
-        'Their kits are built around each other, so both characters get better together than either is alone.',
+        `${banner.character} teams up well with ${partner.name}, who you already have (${investment(partner)}).`,
+        'Their kits are built to work together, so both get better when paired.',
       ],
     }
   }
@@ -183,18 +183,18 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     bestRank - tierRank(consensus) >= 3
   ) {
     const reasons = [
-      `Your closest cover is ${best.name} (${investment(best)}), still under the Lv. ${STRONG_LEVEL} mark where a character starts paying off.`,
+      `Your closest cover is ${best.name} (${investment(best)}), still below Lv. ${STRONG_LEVEL}, where characters start to pay off.`,
     ]
     const note = ratingNote(best)
     if (note) {
       reasons.push(note)
     } else {
       reasons.push(
-        `They rate ${rankName(bestRank)} on Prydwen, well under ${banner.character} (Prydwen ${consensus}), so an unbuilt ${best.name} is not a real answer to the job.`,
+        `Prydwen has them at ${rankName(bestRank)}, well below ${banner.character} (${consensus}), so building ${best.name} won't solve this.`,
       )
     }
     reasons.push(
-      `${banner.character} is consensus top-tier (Prydwen ${consensus}) and the gap is real, so this pull is a recommendation, not a luxury.`,
+      `${banner.character} is rated ${consensus} on Prydwen and you have a gap to fill, so this one is worth pulling for.`,
     )
     return { decision: 'PULL', reasons }
   }
@@ -203,15 +203,15 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
   // is unknown: "build what you own" stays the honest call, and when the
   // unbuilt cover is itself top-tier, say that plainly.
   const reasons = [
-    `Your closest cover is ${best.name} (${investment(best)}), still under the Lv. ${STRONG_LEVEL} mark where a character starts paying off.`,
+    `Your closest cover is ${best.name} (${investment(best)}), still below Lv. ${STRONG_LEVEL}, where characters start to pay off.`,
   ]
   if (bestRank !== undefined && TOP_TIERS.includes(rankName(bestRank))) {
     reasons.push(
-      `You already own a consensus top-tier answer to this job (Prydwen ${getTier(best.name)}); building them likely beats buying a new one.`,
+      `${best.name} is already a top-tier pick for this job (Prydwen ${getTier(best.name)}), so building them will likely do more than a new pull.`,
     )
   } else {
     reasons.push(
-      `Leaving them unbuilt so far says the playstyle never clicked for you, and a new ${banner.element} ${banner.roleTags[0]} rarely fixes that. Pull if you love them, not for the meta.`,
+      `You haven't built them yet, which usually means the playstyle didn't click, and a new ${banner.element} ${banner.roleTags[0]} rarely changes that. Pull if you want them, not for the meta.`,
     )
   }
   return { decision: 'LOVE', reasons }

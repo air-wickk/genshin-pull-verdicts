@@ -8,6 +8,7 @@
     "tier": "T0",
     "roleTags": ["on-field DPS", "support"],
     "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
+    "artShift": 0.025,
     "startDate": "2026-11-04",
     "endDate": "2026-11-24"
   },
@@ -38,6 +39,7 @@
     "bannerName": "Ya-hoho! Compendium",
     "roleTags": ["off-field DPS", "support", "healer"],
     "pairings": ["Zibai", "Columbina", "Illuga", "Gorou"],
+    "artShift": -0.035,
     "startDate": "2026-11-24",
     "endDate": "2026-12-15"
   }
