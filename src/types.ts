@@ -14,6 +14,11 @@ export interface RosterCharacter {
   element: ElementName
   level: number
   constellation: number
+  /** 4 or 5 (Enka's quality flag). The engine uses it to weight a
+   *  cover's consensus tier against its constellations: Prydwen rates
+   *  4-stars at C6 and 5-stars at C0. Absent = 5-star basis, so the
+   *  engine never discounts on a guess. */
+  rarity?: 4 | 5
 }
 
 export interface Banner {

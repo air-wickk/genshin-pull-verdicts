@@ -10,6 +10,9 @@ export interface CharacterData {
   element: string
   icon?: string
   weaponType?: string
+  /** 4 or 5, from Enka's quality flag; drives the constellation-weighted
+   *  cover math (Prydwen rates 4-stars at C6, 5-stars at C0). */
+  rarity?: 4 | 5
 }
 
 // Bundled from Enka.Network's data store via scripts/build-enka-data.mjs.
@@ -40,6 +43,7 @@ export function enkaToRoster(avatars: EnkaAvatar[]): RosterCharacter[] {
       constellation: Array.isArray(avatar.talentIdList)
         ? avatar.talentIdList.length
         : 0,
+      rarity: data?.rarity,
     }
   })
 }

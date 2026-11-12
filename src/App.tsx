@@ -159,7 +159,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
           <span>
             <strong>{banner.character}</strong>{' '}
             <span className="quiet">
-              {banner.element} · {banner.weaponType.toLowerCase()}
+              {banner.element} ┬╖ {banner.weaponType.toLowerCase()}
             </span>
             {banner.bannerName && (
               <span className="banner-name">{banner.bannerName}</span>
@@ -171,7 +171,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
           <span className="quiet">
             {bannerDateLabel(banner)}
             <span className="banner-caret" aria-hidden="true">
-              ▾
+              Γû╛
             </span>
           </span>
         </button>
@@ -196,7 +196,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps
                   <span>
                     <strong>{option.character}</strong>{' '}
                     <span className="quiet">
-                      {option.element} · {option.weaponType.toLowerCase()}
+                      {option.element} ┬╖ {option.weaponType.toLowerCase()}
                     </span>
                   </span>
                   <span className="quiet">
@@ -246,9 +246,9 @@ function LoadingScreen({ uid }: { uid: string }) {
   return (
     <section className="screen">
       <span className="load-star" aria-hidden="true">
-        ✦
+        Γ£ª
       </span>
-      <p className="quiet">Reading showcase for UID {uid}…</p>
+      <p className="quiet">Reading showcase for UID {uid}ΓÇª</p>
       <ul className="roster-grid" aria-hidden="true">
         {Array.from({ length: 6 }, (_, i) => (
           <li key={i} className="roster-card">
@@ -290,7 +290,7 @@ function ErrorScreen({ error, onManual, onRetry, onBack }: ErrorScreenProps) {
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ← Change UID
+        ΓåÉ Change UID
       </button>
       <h1>{copy.title}</h1>
       <p>{copy.body}</p>
@@ -314,7 +314,7 @@ function ConstellationPips({ count }: { count: number }) {
     <span className="pips" role="img" aria-label={`Constellation ${count}`}>
       {Array.from({ length: 6 }, (_, i) => (
         <span key={i} className={i < count ? 'pip filled' : 'pip'}>
-          ✦
+          Γ£ª
         </span>
       ))}
     </span>
@@ -333,7 +333,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ← Change UID
+        ΓåÉ Change UID
       </button>
       <h1>Your showcase</h1>
       <p className="quiet">UID {uid}</p>
@@ -368,7 +368,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
         ))}
       </ul>
       <p className="quiet">
-        {roster.length} characters ·{' '}
+        {roster.length} characters ┬╖{' '}
         {new Set(roster.map((character) => character.element)).size} elements
         covered
       </p>
@@ -415,6 +415,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
       element: data.element as ElementName,
       level: Math.min(Math.max(Number(level) || 1, 1), 90),
       constellation: Math.min(Math.max(Number(constellation) || 0, 0), 6),
+      rarity: data.rarity,
     }
     if (!roster.some((existing) => existing.id === character.id)) {
       onChange([...roster, character])
@@ -427,11 +428,11 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
   return (
     <section className="screen">
       <button type="button" className="text" onClick={onBack}>
-        ← Back
+        ΓåÉ Back
       </button>
       <h1>Add characters by hand</h1>
       <p className="quiet">
-        UID {uid} · start typing a name, then add each character on your account.
+        UID {uid} ┬╖ start typing a name, then add each character on your account.
       </p>
       <form
         className="field manual-form"
@@ -504,7 +505,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
                     aria-label={character.element}
                   />
                   <span className="quiet">
-                    Lv. {character.level} · C{character.constellation}
+                    Lv. {character.level} ┬╖ C{character.constellation}
                   </span>
                 </div>
               </div>
@@ -516,7 +517,7 @@ function ManualScreen({ uid, roster, onChange, onDone, onBack }: ManualScreenPro
                 }
                 aria-label={`Remove ${character.name}`}
               >
-                ×
+                ├ù
               </button>
             </li>
           ))}
@@ -636,7 +637,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
   return (
     <>
       <button type="button" className="primary" onClick={render} disabled={rendering}>
-        {rendering ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
+        {rendering ? 'RenderingΓÇª' : failed ? 'Rendering failed, try again' : 'Share verdict'}
       </button>
       {rendered && (
         <div
@@ -653,7 +654,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               aria-label="Close"
               onClick={() => setRendered(null)}
             >
-              ✕
+              Γ£ò
             </button>
             <img className="share-preview" src={rendered.dataUrl} alt="Verdict card preview" />
             <div className="share-actions">
@@ -663,7 +664,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               {canCopy && (
                 <button type="button" onClick={copyImage}>
                   {copyState === 'copied'
-                    ? 'Copied ✓'
+                    ? 'Copied Γ£ô'
                     : copyState === 'failed'
                       ? 'Copy failed, try again'
                       : 'Copy image'}
@@ -671,7 +672,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
               )}
               <button type="button" onClick={copyLink}>
                 {linkState === 'copied'
-                  ? 'Link copied ✓'
+                  ? 'Link copied Γ£ô'
                   : linkState === 'failed'
                     ? 'Copy failed, try again'
                     : 'Copy link'}
@@ -695,7 +696,7 @@ function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps
             {DECISION_LABEL[verdictResult.decision]}
           </p>
           <p className="share-character">
-            ✦ {banner.character} · {banner.element} ✦
+            Γ£ª {banner.character} ┬╖ {banner.element} Γ£ª
           </p>
           <p className="share-reason">{verdictResult.reasons[0]}</p>
         </div>
@@ -759,7 +760,7 @@ function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
         <i />
       </div>
       <button type="button" className="text" onClick={onBack}>
-        ← Back to roster
+        ΓåÉ Back to roster
       </button>
       <CharacterArt banner={banner} />
       <div
@@ -769,7 +770,7 @@ function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
         <span>
           <strong>{banner.character}</strong>{' '}
           <span className="quiet">
-            {banner.element} · {banner.weaponType.toLowerCase()}
+            {banner.element} ┬╖ {banner.weaponType.toLowerCase()}
           </span>
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
@@ -929,7 +930,7 @@ export default function App() {
       )}
       <footer className="footnote">
         <p className="quiet">
-          Pull Verdicts · not affiliated with HoYoverse · verdicts are opinions,
+          Pull Verdicts ┬╖ not affiliated with HoYoverse ┬╖ verdicts are opinions,
           reasons included
         </p>
       </footer>

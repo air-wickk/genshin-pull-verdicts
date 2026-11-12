@@ -1,6 +1,13 @@
 import type { Banner, Decision, RosterCharacter, Verdict } from './types'
 import { getRoles } from './roles'
-import { TOP_TIERS, WEAK_TIERS, bannerTier, getTier, tierRank } from './tiers'
+import {
+  TIER_ORDER,
+  TOP_TIERS,
+  WEAK_TIERS,
+  bannerTier,
+  getTier,
+  tierRank,
+} from './tiers'
 
 // A "strong" character is one that has been meaningfully invested in.
 // Tuned together with ROLES: this is the whole product, keep it readable.
@@ -26,6 +33,34 @@ function investment(character: RosterCharacter): string {
   return `Lv. ${character.level}, C${character.constellation}`
 }
 
+// How good a cover actually is, in rank steps: see ratedRank. This one
+// renders the discount as a sentence for the reasons text, and returns
+// null when there is nothing to say (a 5-star, a fully built 4-star, or
+// an unknown tier).
+function ratingNote(character: RosterCharacter): string | null {
+  if (character.rarity !== 4 || character.constellation >= 6) return null
+  const tier = getTier(character.name)
+  const rank = ratedRank(character)
+  if (!tier || rank === undefined) return null
+  return `Prydwen rates them ${tier} at C6 (4-stars are rated fully constellated); at C${character.constellation} they play at best like ${rankName(rank)}.`
+}
+
+// The character's Prydwen tier as a rank index, discounted for missing
+// constellations against the rating basis (4-stars are rated at C6,
+// 5-stars at C0), floored at T5. Unknown tier returns undefined:
+// consensus never guesses.
+function ratedRank(character: RosterCharacter): number | undefined {
+  const tier = getTier(character.name)
+  if (!tier) return undefined
+  const basis = character.rarity === 4 ? 6 : 0
+  const missing = Math.max(basis - character.constellation, 0)
+  return Math.min(tierRank(tier) + missing, tierRank('T5'))
+}
+
+function rankName(rank: number): string {
+  return TIER_ORDER[Math.min(Math.max(rank, 0), TIER_ORDER.length - 1)]
+}
+
 export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
   const strong = roster.filter((character) => character.level >= STRONG_LEVEL)
   const covering = roster.filter((character) => covers(character, banner))
@@ -35,26 +70,30 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
   // consensus check first: if the banner unit is Apex while the built
   // cover is far below it (three rank steps, e.g. a T2 cover under a T0
   // banner), the honest verdict softens to "only if you love them".
+  // The cover's rank is weighted by constellation first: Prydwen rates
+  // 4-stars at C6, so a C0 4-star cover plays a tier below its rating.
   // The upgrade is real on paper, but replacing a built carry is a
   // luxury, never a need. Closer ranks keep the sidegrade SKIP, and an
   // unknown tier keeps it too: consensus never guesses.
   const strongCover = strong.find((character) => covers(character, banner))
   if (strongCover) {
     const consensus = bannerTier(banner)
-    const coverTier = getTier(strongCover.name)
+    const coverRank = ratedRank(strongCover)
     if (
       consensus &&
-      coverTier &&
+      coverRank !== undefined &&
       TOP_TIERS.includes(consensus) &&
-      tierRank(coverTier) - tierRank(consensus) >= 3
+      coverRank - tierRank(consensus) >= 3
     ) {
-      return {
-        decision: 'LOVE',
-        reasons: [
-          `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} on your account (${investment(strongCover)}).`,
-          `${banner.character} is consensus top-tier (Prydwen ${consensus}) while ${strongCover.name} sits at ${coverTier}, so the upgrade is real on paper. But replacing a built carry is a luxury, not a need: pull only if you love them.`,
-        ],
-      }
+      const reasons = [
+        `${strongCover.name} already covers ${banner.element} ${banner.roleTags[0]} on your account (${investment(strongCover)}).`,
+      ]
+      const note = ratingNote(strongCover)
+      if (note) reasons.push(note)
+      reasons.push(
+        `${banner.character} is consensus top-tier (Prydwen ${consensus}) while ${strongCover.name} sits at ${rankName(coverRank)} on your account, so the upgrade is real on paper. But replacing a built carry is a luxury, not a need: pull only if you love them.`,
+      )
+      return { decision: 'LOVE', reasons }
     }
     const dupe =
       strongCover.constellation >= 3
@@ -127,15 +166,53 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
     }
   }
 
-  // Rule 4: the account is covered on paper but the cover never got
-  // built. An under-leveled character is a weak vote, so the honest
-  // verdict is "only if you love them", said without judgment.
+  // Rule 4: the account is covered on paper, but the closest cover never
+  // got built. An unbuilt cover is a weak vote, so it holds the verdict
+  // at "only if you love them" only when building it would actually
+  // answer the job. A cover that ranks well below the Apex banner once
+  // its constellations are weighted (Prydwen rates 4-stars at C6) is a
+  // straw cover: the honest verdict is the gap PULL, with the math said
+  // out loud.
   const best = [...covering].sort((a, b) => b.level - a.level)[0]
-  return {
-    decision: 'LOVE',
-    reasons: [
+  const consensus = bannerTier(banner)
+  const bestRank = ratedRank(best)
+  if (
+    consensus &&
+    bestRank !== undefined &&
+    TOP_TIERS.includes(consensus) &&
+    bestRank - tierRank(consensus) >= 3
+  ) {
+    const reasons = [
       `Your closest cover is ${best.name} (${investment(best)}), still under the Lv. ${STRONG_LEVEL} mark where a character starts paying off.`,
-      `Leaving them unbuilt so far says the playstyle never clicked for you, and a new ${banner.element} ${banner.roleTags[0]} rarely fixes that. Pull if you love them, not for the meta.`,
-    ],
+    ]
+    const note = ratingNote(best)
+    if (note) {
+      reasons.push(note)
+    } else {
+      reasons.push(
+        `They rate ${rankName(bestRank)} on Prydwen, well under ${banner.character} (Prydwen ${consensus}), so an unbuilt ${best.name} is not a real answer to the job.`,
+      )
+    }
+    reasons.push(
+      `${banner.character} is consensus top-tier (Prydwen ${consensus}) and the gap is real, so this pull is a recommendation, not a luxury.`,
+    )
+    return { decision: 'PULL', reasons }
   }
+
+  // The cover is either close in rank to the banner or consensus for it
+  // is unknown: "build what you own" stays the honest call, and when the
+  // unbuilt cover is itself top-tier, say that plainly.
+  const reasons = [
+    `Your closest cover is ${best.name} (${investment(best)}), still under the Lv. ${STRONG_LEVEL} mark where a character starts paying off.`,
+  ]
+  if (bestRank !== undefined && TOP_TIERS.includes(rankName(bestRank))) {
+    reasons.push(
+      `You already own a consensus top-tier answer to this job (Prydwen ${getTier(best.name)}); building them likely beats buying a new one.`,
+    )
+  } else {
+    reasons.push(
+      `Leaving them unbuilt so far says the playstyle never clicked for you, and a new ${banner.element} ${banner.roleTags[0]} rarely fixes that. Pull if you love them, not for the meta.`,
+    )
+  }
+  return { decision: 'LOVE', reasons }
 }

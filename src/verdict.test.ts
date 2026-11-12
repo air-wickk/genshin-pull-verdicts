@@ -198,4 +198,83 @@ describe('verdict', () => {
     expect(result.decision).toBe('LOVE')
     expect(result.reasons[0]).toContain('Diluc')
   })
+
+  it('Rule 4: a straw cover does not block a recommended pull (the Noelle case)', () => {
+    // The user case: Zibai (T0 Geo on-field DPS) against an account whose
+    // only Geo cover is Noelle, unbuilt and C0 while Prydwen's T2 rating
+    // assumes C6. The paper cover is a straw one, so the verdict is the
+    // gap PULL, with the math said out loud.
+    const zibai: Banner = {
+      character: 'Zibai',
+      element: 'Geo',
+      weaponType: 'Sword',
+      roleTags: ['on-field DPS'],
+      pairings: ['Linnea', 'Columbina', 'Illuga', 'Chiori'],
+      tier: 'T0',
+      startDate: '2026-11-24',
+      endDate: '2026-12-15',
+    }
+    const roster = [
+      character({
+        name: 'Noelle',
+        element: 'Geo',
+        level: 66,
+        constellation: 0,
+        rarity: 4,
+      }),
+    ]
+    const result = verdict(roster, zibai)
+    expect(result.decision).toBe('PULL')
+    expect(result.reasons.join(' ')).toContain('rates them T2 at C6')
+    expect(result.reasons.join(' ')).toContain('play at best like T5')
+    expect(result.reasons.join(' ')).toContain('Prydwen T0')
+  })
+
+  it('Rule 1: a C0 4-star cover plays below its rating, softening an Apex SKIP', () => {
+    const roster = [
+      character({
+        name: 'Yanfei',
+        element: 'Pyro',
+        level: 90,
+        constellation: 0,
+        rarity: 4,
+      }),
+    ]
+    const result = verdict(roster, { ...banner, tier: 'T0' })
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('rates them T3 at C6')
+    expect(result.reasons.join(' ')).toContain('sits at T5')
+  })
+
+  it('Rule 1: a C6 4-star cover counts at its full rating, no discount note', () => {
+    const roster = [
+      character({
+        name: 'Yanfei',
+        element: 'Pyro',
+        level: 90,
+        constellation: 6,
+        rarity: 4,
+      }),
+    ]
+    const result = verdict(roster, { ...banner, tier: 'T0' })
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('sits at T3')
+    expect(result.reasons.join(' ')).not.toContain('fully constellated')
+  })
+
+  it('Rule 4: an unbuilt top-tier cover says build instead of buy', () => {
+    // Mavuika (T0) owned but unbuilt against a T0 banner: the ranks are
+    // level, so the verdict stays LOVE, and the reason is "build them".
+    const roster = [character({ name: 'Mavuika', element: 'Pyro', level: 65 })]
+    const result = verdict(roster, { ...banner, tier: 'T0' })
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('building them likely beats buying')
+  })
+
+  it('Rule 4: a 5-star straw cover is named without a constellation note', () => {
+    const roster = [character({ name: 'Diluc', element: 'Pyro', level: 50 })]
+    const result = verdict(roster, { ...banner, tier: 'T0' })
+    expect(result.decision).toBe('PULL')
+    expect(result.reasons.join(' ')).toContain('They rate T3 on Prydwen')
+  })
 })

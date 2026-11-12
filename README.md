@@ -13,12 +13,12 @@ This isn't a tier list. It's a verdict for *your* account, based on your public 
 
 ### The verdict rules
 
-Rules run in order, and the first match wins. A "strong" character is Lv. 70+, and a pairing partner counts at Lv. 60+.
+Rules run in order, and the first match wins. A "strong" character is Lv. 70+, and a pairing partner counts at Lv. 60+. Cover ranks are constellation-weighted: Prydwen rates 4-stars at C6 and 5-stars at C0, so a cover below that basis plays a tier below its rating, one step per missing constellation (floored at T5).
 
-1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade. One consensus check: an Apex-tier (T0/T0.5) banner character over a built cover far below it (T1.5 or weaker) softens the SKIP to "only if you love them", since the upgrade is real but replacing a built carry is a luxury.
+1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade. One consensus check: an Apex-tier (T0/T0.5) banner character over a built cover far below it (T1.5 or weaker, after the constellation weighting) softens the SKIP to "only if you love them", since the upgrade is real but replacing a built carry is a luxury.
 2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason. One consensus modifier (Prydwen ranks: a generated snapshot in `src/data/tiers.json`, optionally overridden per banner in `banners.json`) downgrades a gap-PULL to "only if you love them" for weak-tier units, and adds a reason for top-tier ones.
 3. **PULL** if the banner character pairs into a strong team with a character the player already owns.
-4. **LOVE** otherwise. The account is covered on paper, but the cover was never built, so pull for love, not meta.
+4. **LOVE** if the only cover was never built (under Lv. 70) but is worth building: close in rank to the banner, or top-tier itself ("build what you own"). **PULL** instead when the unbuilt cover is a straw cover, ranking well below an Apex banner once constellations are weighted (e.g. a C0 4-star rated T2 at C6): the gap is real, and the math is said out loud.
 
 Every verdict ships with its reasons. The rules are deliberately readable so players can argue with them.
 

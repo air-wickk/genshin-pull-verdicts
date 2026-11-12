@@ -48,6 +48,10 @@ for (const [id, c] of Object.entries(characters)) {
     element: ELEMENTS[c.Element] ?? 'None',
     icon,
     weaponType: c.WeaponType,
+    // QUALITY_PURPLE = 4-star, QUALITY_ORANGE(_SP) = 5-star. The verdict
+    // engine needs this: Prydwen rates 4-stars at C6, so a 4-star cover's
+    // constellation changes what its tier is worth.
+    rarity: c.QualityType === 'QUALITY_PURPLE' ? 4 : 5,
   }
 }
 
