@@ -58,15 +58,6 @@ const DECISION_LABEL = {
   LOVE: 'Only if you love them',
 } as const
 
-// Little fortunes for the UID screen, Genshin wish-screen energy.
-const FLAVOR_LINES = [
-  'May your 50/50s be won.',
-  'Pity is a promise.',
-  'Tonight the stars favor the bold.',
-  'Even the Tsaritsa budgets her primogems.',
-  'Every wish is a question. This is an answer.',
-]
-
 type Phase = 'uid' | 'loading' | 'roster' | 'manual' | 'verdict' | 'error'
 
 // Art URLs. The banner character can be newer than the bundled data store
@@ -145,10 +136,6 @@ interface UidScreenProps {
 
 function UidScreen({ onSubmit }: UidScreenProps) {
   const [uid, setUid] = useState('')
-  const flavor = useMemo(
-    () => FLAVOR_LINES[Math.floor(Math.random() * FLAVOR_LINES.length)],
-    [],
-  )
 
   return (
     <section className="screen screen-uid">
@@ -195,7 +182,6 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           Check my roster
         </button>
       </form>
-      <p className="flavor">{flavor}</p>
       <p className="quiet">Public showcase data only.</p>
     </section>
   )

@@ -1347,7 +1347,7 @@ button.primary:hover::after {
   }
 }
 
-/* ---------- Banner name and flavor lines ---------- */
+/* ---------- Banner name ---------- */
 
 /* The poetic in-game banner title sits under the character line. The
    column layout only applies when a title exists, so banners without
@@ -1365,14 +1365,6 @@ button.primary:hover::after {
   letter-spacing: 0.08em;
   color: #f5c86b;
   opacity: 0.9;
-}
-
-/* The UID screen's fortune: quiet, gold, italic, like a wish-screen
-   loading tip. */
-.flavor {
-  font-style: italic;
-  color: #f5c86b;
-  opacity: 0.75;
 }
 
 @media (prefers-reduced-motion: reduce) {
