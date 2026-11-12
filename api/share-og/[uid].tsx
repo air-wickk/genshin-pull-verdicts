@@ -13,7 +13,7 @@ import { DECISION_LABEL } from '../../src/labels.js'
 import { bannerBySlug } from '../../src/banners.js'
 import type { Banner } from '../../src/types.js'
 
-export const config = { runtime: 'edge' }
+export const runtime = 'edge'
 const UPSTREAM = 'https://enka.network/api/uid'
 const USER_AGENT = 'pull-verdicts/0.1'
 

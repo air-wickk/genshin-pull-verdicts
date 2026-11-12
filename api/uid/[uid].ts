@@ -12,7 +12,7 @@ const CORS = {
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
 } as const
 
-export const config = { runtime: 'edge' }
+export const runtime = 'edge'
 
 function json(body: string, init: { status: number; headers?: Record<string, string> }) {
   return new Response(body, {

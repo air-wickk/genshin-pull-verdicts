@@ -10,7 +10,7 @@ import { enkaToRoster, type EnkaAvatar } from '../../src/enka.js'
 import { DECISION_CLASS, DECISION_LABEL } from '../../src/labels.js'
 import { bannerBySlug, bannerSlug } from '../../src/banners.js'
 
-export const config = { runtime: 'edge' }
+export const runtime = 'edge'
 const UPSTREAM = 'https://enka.network/api/uid'
 const USER_AGENT = 'pull-verdicts/0.1'
 
