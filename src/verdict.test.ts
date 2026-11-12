@@ -89,6 +89,35 @@ describe('verdict', () => {
     expect(result.reasons[1]).toContain('zero Pyro characters')
   })
 
+  it('Rule 2: a consensus-weak banner downgrades the gap-PULL to LOVE', () => {
+    // The gap is real, but paying limited currency for a community-
+    // ranked-weak unit is not advice, so the verdict softens.
+    const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
+    const result = verdict(roster, { ...banner, tier: 'T4' })
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).toContain('Prydwen tier T4')
+  })
+
+  it('Rule 2: a top-tier banner reinforces the gap-PULL with a reason', () => {
+    const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
+    const result = verdict(roster, { ...banner, tier: 'T0' })
+    expect(result.decision).toBe('PULL')
+    expect(result.reasons[result.reasons.length - 1]).toContain('Prydwen tier T0')
+  })
+
+  it('Rule 2: a mid-tier banner changes nothing', () => {
+    const roster = [character({ name: 'Furina', element: 'Hydro', level: 90 })]
+    const result = verdict(roster, { ...banner, tier: 'T2' })
+    expect(result.decision).toBe('PULL')
+    expect(result.reasons.join(' ')).not.toContain('Prydwen')
+  })
+
+  it('Rule 2: tier never overrides an account-based SKIP', () => {
+    // Consensus says weak, but the account logic is certain: SKIP wins.
+    const roster = [character({ name: 'Hu Tao', element: 'Pyro', level: 90 })]
+    expect(verdict(roster, { ...banner, tier: 'T4' }).decision).toBe('SKIP')
+  })
+
   it('Rule 3: PULL and name the pairing when a banner partner is owned', () => {
     // Diluc covers Pyro on-field but is below the "strong" threshold, so
     // Rule 1 and Rule 2 pass through; owned Yelan tips it to PULL.

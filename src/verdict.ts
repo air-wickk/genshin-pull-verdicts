@@ -1,10 +1,17 @@
-import type { Banner, RosterCharacter, Verdict } from './types'
+import type { Banner, Decision, RosterCharacter, Verdict } from './types'
 import { getRoles } from './roles'
 
 // A "strong" character is one that has been meaningfully invested in.
 // Tuned together with ROLES: this is the whole product, keep it readable.
 export const STRONG_LEVEL = 70
 export const PARTNER_LEVEL = 60
+
+// Consensus tier (hand-updated from Prydwen's tier list into banners.json
+// alongside the rest of the banner data). The tier never creates a
+// verdict on its own: it only tempers or reinforces the account-based
+// gap rule, so every verdict stays about the account.
+export const TOP_TIERS = ['T0', 'T0.5']
+export const WEAK_TIERS = ['T3', 'T4']
 
 // A character "covers" the banner when they share its element AND at least
 // one of its jobs. Role knowledge comes from ROLES; unknown roles are
@@ -66,7 +73,24 @@ export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
         `Your roster is still young (${strong.length} invested ${strong.length === 1 ? 'character' : 'characters'}), and a limited 5-star carries an early account further than a mature one.`,
       )
     }
-    return { decision: 'PULL', reasons }
+
+    // Consensus modifier, the one place an outside opinion enters the
+    // engine: a gap says PULL, but paying limited currency for a unit
+    // the community rates weak is not advice, it's a trap. Downgrade to
+    // "only if you love them" and say both facts. A top-ranked unit
+    // filling a real gap is the opposite: say so, and reinforce.
+    let decision: Decision = 'PULL'
+    if (banner.tier && WEAK_TIERS.includes(banner.tier)) {
+      reasons.push(
+        `Fair warning: consensus ranks ${banner.character} low (Prydwen tier ${banner.tier}), so filling the gap means paying for a weak unit. Only if you love them.`,
+      )
+      decision = 'LOVE'
+    } else if (banner.tier && TOP_TIERS.includes(banner.tier)) {
+      reasons.push(
+        `Consensus also ranks ${banner.character} at the top (Prydwen tier ${banner.tier}), so this is a strong unit filling a real gap.`,
+      )
+    }
+    return { decision, reasons }
   }
 
   // Rule 3: the banner character enables a strong team with someone you

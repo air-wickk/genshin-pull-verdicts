@@ -1347,12 +1347,12 @@ button.primary:hover::after {
   }
 }
 
-/* ---------- Banner name ---------- */
+/* ---------- Banner name and tier ---------- */
 
 /* The poetic in-game banner title sits under the character line. The
-   column layout only applies when a title exists, so banners without
-   one keep the single-line card. */
-.banner-card > span:first-child:has(.banner-name) {
+   column layout only applies when extra lines exist, so banners without
+   them keep the single-line card. */
+.banner-card > span:first-child:has(.banner-name, .banner-tier) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1365,6 +1365,14 @@ button.primary:hover::after {
   letter-spacing: 0.08em;
   color: #f5c86b;
   opacity: 0.9;
+}
+
+/* The consensus rank, attributed to its source. */
+.banner-tier {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #f5c86b;
+  opacity: 0.75;
 }
 
 @media (prefers-reduced-motion: reduce) {

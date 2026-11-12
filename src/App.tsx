@@ -152,6 +152,9 @@ function UidScreen({ onSubmit }: UidScreenProps) {
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
           )}
+          {banner.tier && (
+            <span className="banner-tier">Prydwen: {banner.tier}</span>
+          )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>
       </div>
@@ -629,6 +632,9 @@ function VerdictScreen({ roster, onBack }: VerdictScreenProps) {
           </span>
           {banner.bannerName && (
             <span className="banner-name">{banner.bannerName}</span>
+          )}
+          {banner.tier && (
+            <span className="banner-tier">Prydwen: {banner.tier}</span>
           )}
         </span>
         <span className="quiet">{bannerDateLabel()}</span>

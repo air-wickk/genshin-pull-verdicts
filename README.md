@@ -16,7 +16,7 @@ This isn't a tier list. It's a verdict for *your* account, based on your public 
 Rules run in order, and the first match wins. A "strong" character is Lv. 70+, and a pairing partner counts at Lv. 60+.
 
 1. **SKIP** if a strong character already covers the banner's element and one of its jobs. A second copy of the same job is a sidegrade.
-2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason.
+2. **PULL** if nobody covers the element and job. The reasons name the gap precisely, and a young roster (2 or fewer strong characters) adds an early-account reason. One hand-updated modifier: the consensus rank from Prydwen's tier list (stored in `banners.json`) downgrades a gap-PULL to "only if you love them" for weak-tier units, and adds a reason for top-tier ones.
 3. **PULL** if the banner character pairs into a strong team with a character the player already owns.
 4. **LOVE** otherwise. The account is covered on paper, but the cover was never built, so pull for love, not meta.
 
