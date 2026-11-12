@@ -525,7 +525,10 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
       link.download = filename
       link.href = dataUrl
       link.click()
-    } catch {
+    } catch (error) {
+      // Render failures were invisible before; keep the button state but
+      // also say what actually went wrong in the console.
+      console.warn('Share render failed:', error)
       setFailed(true)
     } finally {
       setSharing(false)
@@ -537,21 +540,26 @@ function ShareCard({ verdictResult, decisionClass }: ShareCardProps) {
       <button type="button" className="primary" onClick={share} disabled={sharing}>
         {sharing ? 'Rendering…' : failed ? 'Rendering failed, try again' : 'Share verdict'}
       </button>
-      {/* Off-screen but rendered: the 1200x630 image the button exports. */}
-      <div ref={cardRef} className={`share-card ${decisionClass}`} aria-hidden="true">
-        <p className="share-kicker">Pull Verdicts</p>
-        <img className="share-icon" src={sideIconUrl(banner.character)} alt="" crossOrigin="anonymous" />
-        <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
-          {DECISION_LABEL[verdictResult.decision]}
-        </p>
-        <p className="share-character">
-          ✦ {banner.character} · {banner.element} ✦
-        </p>
-        <p className="share-reason">{verdictResult.reasons[0]}</p>
-        <p className="share-foot">
-          <span>genshin wish, real verdict</span>
-          <span>{bannerDateLabel()}</span>
-        </p>
+      {/* The staging wrapper holds the off-screen positioning. The rendered
+          card inside it must position itself normally: html-to-image copies
+          computed styles onto the clone, so a fixed -20000px card would be
+          cloned off-canvas too and export a blank image. */}
+      <div className="share-staging" aria-hidden="true">
+        <div ref={cardRef} className={`share-card ${decisionClass}`}>
+          <p className="share-kicker">Pull Verdicts</p>
+          <img className="share-icon" src={sideIconUrl(banner.character)} alt="" crossOrigin="anonymous" />
+          <p className={`share-word ${DECISION_CLASS[verdictResult.decision]}`}>
+            {DECISION_LABEL[verdictResult.decision]}
+          </p>
+          <p className="share-character">
+            ✦ {banner.character} · {banner.element} ✦
+          </p>
+          <p className="share-reason">{verdictResult.reasons[0]}</p>
+          <p className="share-foot">
+            <span>genshin wish, real verdict</span>
+            <span>{bannerDateLabel()}</span>
+          </p>
+        </div>
       </div>
     </>
   )

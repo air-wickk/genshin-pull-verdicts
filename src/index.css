@@ -916,10 +916,23 @@ details.why ul {
 
 /* ---------- Share card (rendered off-screen, exported as 1200x630 PNG) --- */
 
-.share-card {
+/* The staging wrapper owns the off-screen placement: it is what sits fixed
+   at -20000px, so the card it wraps positions normally and clones clean.
+   The card itself must never carry the off-screen styles; html-to-image
+   copies every computed style onto the clone, and a fixed -20000px clone
+   renders 20000px outside the exported viewport: a blank image. */
+.share-staging {
   position: fixed;
   left: -20000px;
   top: 0;
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.share-card {
+  position: relative;
   width: 1200px;
   height: 630px;
   background: var(--bg);
