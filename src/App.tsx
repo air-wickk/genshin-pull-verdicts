@@ -400,7 +400,7 @@ function RosterScreen({ uid, roster, onConfirm, onManual, onBack }: RosterScreen
         covered
       </p>
       <p className="quiet showcase-note">
-        Showcases hold up to 8 pinned characters. Anyone unpinned is
+        Showcases hold up to 12 pinned characters. Anyone unpinned is
         invisible to public data, so pin your strongest characters in game
         or add them by hand.
       </p>
