@@ -66,6 +66,11 @@ body {
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* The verdict splash is height-sized and wider than the column, often
+     wider than the viewport; clip the horizontal bleed. (hidden is the
+     fallback for browsers without clip.) */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .app {
@@ -779,35 +784,37 @@ button.remove:focus-visible {
   vertical-align: 1px;
 }
 
-/* Character art (splash → side icon fallback) above the verdict.
-   Splash art is usually a wide 2048x1024 image, so it sizes by its own
-   aspect ratio, never a forced square. It overlaps the banner card's
-   top edge so the pieces compose as one object instead of floating
-   apart. */
+/* Character art (splash → side icon fallback) as the verdict's backdrop,
+   the way the official wish screen sets its character art behind the UI:
+   sized by height so the character reads large on every device, centered
+   on the column axis, and painted into the sky layer (z-index -1, the
+   same plane as the stars and the astral wheel) so the glass cards float
+   over it and pick it up through their backdrop blur. */
 .character-art {
   display: block;
-  max-width: 100%;
-  max-height: 400px;
-  width: auto;
-  height: auto;
-  margin: 0 auto -70px;
   position: relative;
-  z-index: 1;
-  /* Integrated, not placed: a radial mask tapers every edge of the
-     splash into the sky, so the art dissolves into the night instead of
-     ending at a box edge, and the drop shadow follows the transparent
-     silhouette rather than a rectangle. */
+  left: 50%;
+  translate: -50% 0;
+  height: clamp(300px, 52vh, 540px);
+  width: auto;
+  max-width: none;
+  margin: 0 auto -180px;
+  z-index: -1;
+  pointer-events: none;
+  /* A radial mask tapers every edge of the splash into the night, so
+     the art dissolves instead of ending at a box edge, and the drop
+     shadow follows the transparent silhouette rather than a rectangle. */
   -webkit-mask-image: radial-gradient(
-    ellipse 62% 58% at 50% 40%,
-    black 48%,
-    transparent 82%
+    ellipse 62% 60% at 50% 42%,
+    black 45%,
+    transparent 88%
   );
   mask-image: radial-gradient(
-    ellipse 62% 58% at 50% 40%,
-    black 48%,
-    transparent 82%
+    ellipse 62% 60% at 50% 42%,
+    black 45%,
+    transparent 88%
   );
-  filter: drop-shadow(0 18px 44px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
 }
 
 /* The verdict card composes in layers: an element-colored glow at the top
