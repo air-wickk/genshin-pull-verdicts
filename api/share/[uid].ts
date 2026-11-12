@@ -8,12 +8,9 @@
 import { verdict as computeVerdict } from '../../src/verdict'
 import { enkaToRoster, type EnkaAvatar } from '../../src/enka'
 import { DECISION_CLASS, DECISION_LABEL } from '../../src/labels'
-import bannerData from '../../src/banners.json'
-import type { Banner } from '../../src/types'
+import { bannerBySlug, bannerSlug } from '../../src/banners'
 
 export const config = { runtime: 'edge' }
-
-const banner = bannerData as Banner
 const UPSTREAM = 'https://enka.network/api/uid'
 const USER_AGENT = 'pull-verdicts/0.1'
 
@@ -49,6 +46,9 @@ export default async function handler(request: Request): Promise<Response> {
   if (!/^\d{9}$/.test(uid)) {
     return new Response('UID must be 9 digits', { status: 400 })
   }
+  // The og card must match the banner the sharer judged: the tweet drafts
+  // ?b=<slug>. Absent or unknown slug falls back to today's active banner.
+  const banner = bannerBySlug(url.searchParams.get('b'))
 
   const title = `My pull verdict for ${banner.character}`
   const cta = escapeHtml('Get your own verdict')
@@ -102,7 +102,7 @@ export default async function handler(request: Request): Promise<Response> {
         <p class="word ${DECISION_CLASS[verdict.decision]}">${escapeHtml(label)}</p>
         <p class="character">${character} &middot; ${escapeHtml(banner.element)}</p>
         <p class="reason">${reason}</p>
-        <a class="cta" href="/">${cta}</a>
+        <a class="cta" href="/?b=${escapeHtml(bannerSlug(banner.character))}">${cta}</a>
         <p class="quiet">from the public showcase for UID ${uid}</p>
       </main>`,
   })

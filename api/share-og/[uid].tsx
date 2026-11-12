@@ -10,12 +10,10 @@ import { ImageResponse } from '@vercel/og'
 import { verdict as computeVerdict } from '../../src/verdict'
 import { enkaToRoster, type EnkaAvatar } from '../../src/enka'
 import { DECISION_LABEL } from '../../src/labels'
-import bannerData from '../../src/banners.json'
+import { bannerBySlug } from '../../src/banners'
 import type { Banner } from '../../src/types'
 
 export const config = { runtime: 'edge' }
-
-const banner = bannerData as Banner
 const UPSTREAM = 'https://enka.network/api/uid'
 const USER_AGENT = 'pull-verdicts/0.1'
 
@@ -36,7 +34,7 @@ function sideIconUrl(name: string): string {
 // satori's <img> can take a remote URL, but only if the fetch succeeds;
 // fetching it ourselves first lets a failed icon degrade to no icon
 // instead of failing the whole render.
-async function loadIconDataUrl(): Promise<string | null> {
+async function loadIconDataUrl(banner: Banner): Promise<string | null> {
   try {
     const response = await fetch(sideIconUrl(banner.character), {
       headers: { 'User-Agent': USER_AGENT },
@@ -57,7 +55,13 @@ async function loadIconDataUrl(): Promise<string | null> {
 // The card body, matched to the in-app ShareCard: kicker, icon, verdict
 // word, character line, first reason, site pointer. satori is a CSS
 // subset: inline styles only, flexbox only, so this is written as objects.
-function cardLayout(label: string, reason: string, icon: string | null, host: string) {
+function cardLayout(
+  banner: Banner,
+  label: string,
+  reason: string,
+  icon: string | null,
+  host: string,
+) {
   const state = STATE[label] ?? GOLD
   const wordSize = label === 'Only if you love them' ? 84 : 140
   return (
@@ -131,7 +135,7 @@ function cardLayout(label: string, reason: string, icon: string | null, host: st
 
 // When the showcase cannot be read, the link must still resolve: draw a
 // plain branded card so the tweet never embeds a broken image.
-function fallbackCard() {
+function fallbackCard(banner: Banner) {
   return (
     <div
       style={{
@@ -181,6 +185,8 @@ export default async function handler(request: Request): Promise<Response> {
   if (!/^\d{9}$/.test(uid)) {
     return new Response('UID must be 9 digits', { status: 400 })
   }
+  // Match the banner the sharer judged (?b=<slug>); else today's active one.
+  const banner = bannerBySlug(url.searchParams.get('b'))
 
   const cache = 'public, s-maxage=3600, stale-while-revalidate=86400'
 
@@ -190,26 +196,26 @@ export default async function handler(request: Request): Promise<Response> {
       headers: { 'User-Agent': USER_AGENT },
     })
   } catch {
-    return imageResponse(fallbackCard(), cache)
+    return imageResponse(fallbackCard(banner), cache)
   }
   if (!upstream.ok) {
-    return imageResponse(fallbackCard(), cache)
+    return imageResponse(fallbackCard(banner), cache)
   }
 
   let payload: { avatarInfoList?: EnkaAvatar[] }
   try {
     payload = (await upstream.json()) as { avatarInfoList?: EnkaAvatar[] }
   } catch {
-    return imageResponse(fallbackCard(), cache)
+    return imageResponse(fallbackCard(banner), cache)
   }
   const avatars = payload.avatarInfoList
   if (!Array.isArray(avatars) || avatars.length === 0) {
-    return imageResponse(fallbackCard(), cache)
+    return imageResponse(fallbackCard(banner), cache)
   }
 
   const verdict = computeVerdict(enkaToRoster(avatars), banner)
   const label = DECISION_LABEL[verdict.decision]
-  const icon = await loadIconDataUrl()
+  const icon = await loadIconDataUrl(banner)
 
-  return imageResponse(cardLayout(label, verdict.reasons[0], icon, url.host), cache)
+  return imageResponse(cardLayout(banner, label, verdict.reasons[0], icon, url.host), cache)
 }

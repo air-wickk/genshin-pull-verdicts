@@ -125,6 +125,9 @@ export const ROLES: Record<string, RoleTag[]> = {
   // add-by-hand roster entries until the next data rebuild).
   'Mitya': ['on-field DPS', 'support'],
   'Valeriy': ['support'],
+  // Phase 2 rerun characters also missing from the bundled store.
+  'Zibai': ['on-field DPS'],
+  'Linnea': ['off-field DPS', 'support', 'healer'],
 }
 
 export function getRoles(name: string): RoleTag[] | undefined {

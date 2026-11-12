@@ -24,7 +24,7 @@ Every verdict ships with its reasons. The rules are deliberately readable so pla
 
 ## Sharing
 
-Share verdict renders the 1200x630 card and opens an in-app dialog: post on X with a pre-filled draft, copy the image, copy the link, or download it. The draft links to `/share/{uid}`, two Vercel edge functions (`api/share/[uid].ts`, `api/share-og/[uid].ts`) that run the same rules engine server-side and serve the sharer's verdict as the tweet's large preview card (og:image, drawn with @vercel/og). Clicking the card opens the site. The embed only works on the deployed site; in dev the link goes nowhere.
+Share verdict renders the 1200x630 card and opens an in-app dialog: post on X with a pre-filled draft, copy the image, copy the link, or download it. The draft links to `/share/{uid}?b={character}` (two Vercel edge functions, `api/share/[uid].ts` and `api/share-og/[uid].ts`), which run the same rules engine server-side for the chosen banner and serve the sharer's verdict as the tweet's large preview card (og:image, drawn with @vercel/og). Clicking the card opens the site with that banner preselected. The embed only works on the deployed site; in dev the link goes nowhere.
 
 ## Development
 
@@ -46,6 +46,7 @@ node scripts/build-prydwen-tiers.mjs   # refresh consensus tiers; pass a saved p
 
 ## Notes
 
+- Each game version runs two limited character banners per phase; the dropdown on the home screen picks between them. The list in `src/banners.json` is hand-updated every version.
 - Only characters on a player's public showcase are visible; otherwise, add them by hand.
 - Meta is opinion. Every verdict shows its reasons so players can disagree.
 - No logins, ever.

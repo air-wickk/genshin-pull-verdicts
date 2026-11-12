@@ -152,6 +152,36 @@ input[type='text'] {
   border-radius: var(--radius);
 }
 
+/* The banner picker on the UID screen: same visual language as the UID
+   field, so the two controls read as one form. */
+.banner-select {
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease-out,
+    background-color 0.2s ease-out;
+}
+
+.banner-select:hover,
+.banner-select:focus-visible {
+  border-color: rgba(232, 230, 227, 0.4);
+  background: rgba(19, 26, 43, 0.8);
+}
+
+/* Options render in the browser's own popup; the dark surface keeps the
+   closed control on-theme either way. */
+.banner-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
 input[type='text']::placeholder {
   color: var(--quiet);
 }

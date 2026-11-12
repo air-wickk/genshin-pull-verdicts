@@ -3,12 +3,17 @@ import { toPng } from 'html-to-image'
 import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
 import { DECISION_CLASS, DECISION_LABEL } from './labels'
-import bannerData from './banners.json'
+import {
+  BANNERS,
+  bannerBySlug,
+  bannerDateLabel,
+  bannerEnded,
+  bannerSlug,
+  formatDate,
+} from './banners'
 import { verdict as computeVerdict } from './verdict'
 import { bannerTier } from './tiers'
 import { WishReveal } from './WishReveal'
-
-const banner = bannerData as Banner
 
 // Canvas can't read CSS variables, so the element tint for the wish
 // particles needs real hex values (mirrors the --element tokens).
@@ -63,22 +68,11 @@ function sideIconUrl(name: string): string {
 }
 
 // "2026-11-24" becomes "Nov 24": ISO dates are for data, not for people.
-function formatDate(iso: string): string {
-  const date = new Date(`${iso}T00:00:00`)
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
-}
+// (formatDate and the date labels live in src/banners.ts, shared with the
+// share-page edge functions.)
 
-// The banner list is hand-updated, so after the end date passes the site
-// would silently keep judging against a banner that no longer exists.
-// Detect that once and say so plainly wherever the banner is shown.
-const BANNER_ENDED = Date.now() > new Date(`${banner.endDate}T23:59:59`).getTime()
-
-function bannerDateLabel(): string {
-  return `${BANNER_ENDED ? 'ended' : 'ends'} ${formatDate(banner.endDate)}`
-}
-
-function StaleBannerNote() {
-  if (!BANNER_ENDED) return null
+function StaleBannerNote({ banner }: { banner: Banner }) {
+  if (!bannerEnded(banner)) return null
   return (
     <p className="quiet stale-note">
       This banner ended {formatDate(banner.endDate)}. The banner list is
@@ -122,15 +116,31 @@ function saveRoster(uid: string, roster: RosterCharacter[]) {
 
 interface UidScreenProps {
   onSubmit: (uid: string) => void
+  banner: Banner
+  banners: Banner[]
+  onSelectBanner: (character: string) => void
 }
 
-function UidScreen({ onSubmit }: UidScreenProps) {
+function UidScreen({ onSubmit, banner, banners, onSelectBanner }: UidScreenProps) {
   const [uid, setUid] = useState('')
   const consensus = bannerTier(banner)
 
   return (
     <section className="screen screen-uid">
       <h1 className="hero">Should you pull?</h1>
+      <select
+        className="banner-select"
+        value={banner.character}
+        onChange={(event) => onSelectBanner(event.target.value)}
+        aria-label="Banner to judge against"
+      >
+        {banners.map((option) => (
+          <option key={option.character} value={option.character}>
+            {option.character} ({formatDate(option.startDate)} to{' '}
+            {formatDate(option.endDate)})
+          </option>
+        ))}
+      </select>
       <div
         className="banner-card"
         style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
@@ -147,9 +157,9 @@ function UidScreen({ onSubmit }: UidScreenProps) {
             <span className="banner-tier">Prydwen: {consensus}</span>
           )}
         </span>
-        <span className="quiet">{bannerDateLabel()}</span>
+        <span className="quiet">{bannerDateLabel(banner)}</span>
       </div>
-      <StaleBannerNote />
+      <StaleBannerNote banner={banner} />
       <p className="art-caption">
         Pull Verdicts reads your public showcase, compares it against the
         current banner, and gives you a verdict, with the reasons.
@@ -476,9 +486,10 @@ interface ShareCardProps {
   verdictResult: Verdict
   decisionClass: 'pull' | 'skip' | 'love'
   uid: string
+  banner: Banner
 }
 
-function ShareCard({ verdictResult, decisionClass, uid }: ShareCardProps) {
+function ShareCard({ verdictResult, decisionClass, uid, banner }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [rendering, setRendering] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -529,7 +540,7 @@ function ShareCard({ verdictResult, decisionClass, uid }: ShareCardProps) {
   // the share page, whose Open Graph tags render the result as the
   // clickable preview card. The user edits the text before it posts, so
   // this is a draft, never an auto-post.
-  const shareLink = `${window.location.origin}/share/${uid}`
+  const shareLink = `${window.location.origin}/share/${uid}?b=${bannerSlug(banner.character)}`
 
   const shareOnX = () => {
     if (!rendered) return
@@ -647,10 +658,11 @@ function ShareCard({ verdictResult, decisionClass, uid }: ShareCardProps) {
 interface VerdictScreenProps {
   roster: RosterCharacter[]
   uid: string
+  banner: Banner
   onBack: () => void
 }
 
-function CharacterArt() {
+function CharacterArt({ banner }: { banner: Banner }) {
   // Splash art for newer characters; the side icon always exists.
   const [splashFailed, setSplashFailed] = useState(false)
 
@@ -667,8 +679,11 @@ function CharacterArt() {
   )
 }
 
-function VerdictScreen({ roster, uid, onBack }: VerdictScreenProps) {
-  const verdictResult = useMemo(() => computeVerdict(roster, banner), [roster])
+function VerdictScreen({ roster, uid, banner, onBack }: VerdictScreenProps) {
+  const verdictResult = useMemo(
+    () => computeVerdict(roster, banner),
+    [roster, banner],
+  )
   const matching = roster.filter((character) => character.element === banner.element)
   const decisionClass = DECISION_CLASS[verdictResult.decision]
   const consensus = bannerTier(banner)
@@ -697,7 +712,7 @@ function VerdictScreen({ roster, uid, onBack }: VerdictScreenProps) {
       <button type="button" className="text" onClick={onBack}>
         ← Back to roster
       </button>
-      <CharacterArt />
+      <CharacterArt banner={banner} />
       <div
         className="banner-card"
         style={{ borderLeft: `3px solid ${ELEMENT_COLORS[banner.element]}` }}
@@ -714,9 +729,9 @@ function VerdictScreen({ roster, uid, onBack }: VerdictScreenProps) {
             <span className="banner-tier">Prydwen: {consensus}</span>
           )}
         </span>
-        <span className="quiet">{bannerDateLabel()}</span>
+        <span className="quiet">{bannerDateLabel(banner)}</span>
       </div>
-      <StaleBannerNote />
+      <StaleBannerNote banner={banner} />
       <div
         className={`verdict-card ${decisionClass}`}
         style={{ '--element': ELEMENT_COLORS[banner.element] } as React.CSSProperties}
@@ -754,7 +769,12 @@ function VerdictScreen({ roster, uid, onBack }: VerdictScreenProps) {
           </ul>
         </details>
       </div>
-      <ShareCard verdictResult={verdictResult} decisionClass={decisionClass} uid={uid} />
+      <ShareCard
+        verdictResult={verdictResult}
+        decisionClass={decisionClass}
+        uid={uid}
+        banner={banner}
+      />
     </section>
   )
 }
@@ -766,6 +786,16 @@ export default function App() {
   const [uid, setUid] = useState('')
   const [roster, setRoster] = useState<RosterCharacter[]>([])
   const [error, setError] = useState<RosterErrorState | null>(null)
+  // The banner to judge against. A share link's "?b=furina" preselects;
+  // otherwise the banner whose window contains today decides.
+  const [banner, setBanner] = useState<Banner>(() =>
+    bannerBySlug(new URLSearchParams(window.location.search).get('b')),
+  )
+
+  const selectBanner = (character: string) => {
+    const found = BANNERS.find((option) => option.character === character)
+    if (found) setBanner(found)
+  }
 
   // Restore the last roster once, then let the user navigate freely.
   useEffect(() => {
@@ -802,7 +832,14 @@ export default function App() {
         <i />
         <i />
       </div>
-      {phase === 'uid' && <UidScreen onSubmit={fetchRoster} />}
+      {phase === 'uid' && (
+        <UidScreen
+          onSubmit={fetchRoster}
+          banner={banner}
+          banners={BANNERS}
+          onSelectBanner={selectBanner}
+        />
+      )}
       {phase === 'loading' && <LoadingScreen uid={uid} />}
       {phase === 'error' && error && (
         <ErrorScreen
@@ -834,7 +871,12 @@ export default function App() {
         />
       )}
       {phase === 'verdict' && (
-        <VerdictScreen roster={roster} uid={uid} onBack={() => setPhase('roster')} />
+        <VerdictScreen
+          roster={roster}
+          uid={uid}
+          banner={banner}
+          onBack={() => setPhase('roster')}
+        />
       )}
       <footer className="footnote">
         <p className="quiet">

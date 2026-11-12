@@ -1,12 +1,44 @@
-{
-  "_comment": "Hand-updated every game version (roughly every 6 weeks); there is no official banner API. Version 7.2 Phase 1. A character newer than the bundled data store (scripts/build-enka-data.mjs) can sit here; art and share card then use name-based Enka CDN URLs. roleTags drive the verdict rules (see src/roles.ts); pairings lists characters this one enables a strong team with.",
-  "character": "Mitya",
-  "element": "Electro",
-  "weaponType": "Catalyst",
-  "bannerName": "Myriad Patterns Unfold",
-  "tier": "T0",
-  "roleTags": ["on-field DPS", "support"],
-  "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
-  "startDate": "2026-11-04",
-  "endDate": "2026-11-24"
-}
+[
+  {
+    "_comment": "Hand-updated every game version (roughly every 6 weeks); there is no official banner API. All banners live or upcoming in the current version. A character newer than the bundled data store (scripts/build-enka-data.mjs) can sit here; art and share card then use name-based Enka CDN URLs. roleTags drive the verdict rules (see src/roles.ts); pairings lists characters this one enables a strong team with. tier is an optional hand override; the generated snapshot src/data/tiers.json decides otherwise.",
+    "character": "Mitya",
+    "element": "Electro",
+    "weaponType": "Catalyst",
+    "bannerName": "Myriad Patterns Unfold",
+    "tier": "T0",
+    "roleTags": ["on-field DPS", "support"],
+    "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
+    "startDate": "2026-11-04",
+    "endDate": "2026-11-24"
+  },
+  {
+    "character": "Furina",
+    "element": "Hydro",
+    "weaponType": "Sword",
+    "bannerName": "Chanson of Many Waters",
+    "roleTags": ["off-field DPS"],
+    "pairings": ["Neuvillette", "Wriothesley", "Mualani", "Kamisato Ayato"],
+    "startDate": "2026-11-04",
+    "endDate": "2026-11-24"
+  },
+  {
+    "character": "Zibai",
+    "element": "Geo",
+    "weaponType": "Sword",
+    "bannerName": "Harmonious Abundance",
+    "roleTags": ["on-field DPS"],
+    "pairings": ["Linnea", "Columbina", "Illuga", "Chiori"],
+    "startDate": "2026-11-24",
+    "endDate": "2026-12-15"
+  },
+  {
+    "character": "Linnea",
+    "element": "Geo",
+    "weaponType": "Bow",
+    "bannerName": "Ya-hoho! Compendium",
+    "roleTags": ["off-field DPS", "support", "healer"],
+    "pairings": ["Zibai", "Columbina", "Illuga", "Gorou"],
+    "startDate": "2026-11-24",
+    "endDate": "2026-12-15"
+  }
+]
