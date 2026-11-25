@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
-import type { Banner, ElementName, RosterCharacter, Verdict } from './types'
+import type { Banner, ElementName, RosterCharacter, UpcomingBanner, Verdict } from './types'
 import { subjectShift } from './artCenter'
 import { CHARACTERS, RosterError, getRoster, iconUrl } from './api'
 import { DECISION_CLASS, DECISION_LABEL } from './labels'
@@ -12,6 +12,7 @@ import {
   bannerSlug,
   formatDate,
   formatDateYear,
+  upcomingBanners,
 } from './banners'
 import { verdict as computeVerdict } from './verdict'
 import { bannerTier } from './tiers'
@@ -77,8 +78,26 @@ function StaleBannerNote({ banner }: { banner: Banner }) {
   if (!bannerEnded(banner)) return null
   return (
     <p className="quiet stale-note">
-      This banner ended {formatDate(banner.endDate)}. The banner list is
-      hand-updated, so a new one may already be live in game.
+      This banner ended {formatDate(banner.endDate)}. Banner data updates
+      automatically, so a new phase should appear here shortly after it
+      goes live in game.
+    </p>
+  )
+}
+
+function upcomingLabel(entry: UpcomingBanner): string {
+  const facts = [entry.element, entry.version, entry.note].filter(Boolean)
+  return facts.length > 0 ? `${entry.character} (${facts.join(', ')})` : entry.character
+}
+
+// Announced characters whose banner dates are not out yet. Deliberately
+// not part of the picker: there is nothing to judge until they have a
+// dated phase, so this is a quiet note under the banner card.
+function ComingNext({ upcoming }: { upcoming: UpcomingBanner[] }) {
+  if (upcoming.length === 0) return null
+  return (
+    <p className="quiet coming-next">
+      Coming next: {upcoming.map(upcomingLabel).join(', ')}. Dates TBA.
     </p>
   )
 }
@@ -221,12 +240,20 @@ interface UidScreenProps {
   onSubmit: (uid: string) => void
   banner: Banner
   banners: Banner[]
+  upcoming: UpcomingBanner[]
   onSelectBanner: (character: string) => void
   /** The UID from the last lookup, pre-filled but freely editable. */
   initialUid: string
 }
 
-function UidScreen({ onSubmit, banner, banners, onSelectBanner, initialUid }: UidScreenProps) {
+function UidScreen({
+  onSubmit,
+  banner,
+  banners,
+  upcoming,
+  onSelectBanner,
+  initialUid,
+}: UidScreenProps) {
   const [uid, setUid] = useState(initialUid)
 
   return (
@@ -239,6 +266,7 @@ function UidScreen({ onSubmit, banner, banners, onSelectBanner, initialUid }: Ui
         openLabel="Open the banner list"
       />
       <StaleBannerNote banner={banner} />
+      <ComingNext upcoming={upcoming} />
       <p className="art-caption">
         Pull Verdicts reads your public showcase, compares it against the
         current banner, and gives you a verdict, with the reasons.
@@ -762,6 +790,7 @@ interface VerdictScreenProps {
   uid: string
   banner: Banner
   banners: Banner[]
+  upcoming: UpcomingBanner[]
   /** Re-judge against another banner without leaving this screen. */
   onSelectBanner: (character: string) => void
   onBack: () => void
@@ -1072,7 +1101,15 @@ function AmbientArt({ src, shift = 0 }: { src: string; shift?: number }) {
   )
 }
 
-function VerdictScreen({ roster, uid, banner, banners, onSelectBanner, onBack }: VerdictScreenProps) {
+function VerdictScreen({
+  roster,
+  uid,
+  banner,
+  banners,
+  upcoming,
+  onSelectBanner,
+  onBack,
+}: VerdictScreenProps) {
   const verdictResult = useMemo(
     () => computeVerdict(roster, banner),
     [roster, banner],
@@ -1116,6 +1153,7 @@ function VerdictScreen({ roster, uid, banner, banners, onSelectBanner, onBack }:
         openLabel="Open the banner list to judge against another banner"
       />
       <StaleBannerNote banner={banner} />
+      <ComingNext upcoming={upcoming} />
       <div
         className={`verdict-card ${decisionClass}`}
         style={{ '--element': ELEMENT_COLORS[banner.element] } as React.CSSProperties}
@@ -1188,6 +1226,20 @@ export default function App() {
     }
   }
 
+  // The picker offers live and upcoming phases only. Ended banners stay in
+  // the data for a week so recently shared links still resolve, but offering
+  // them would be misleading. The banner already selected is always kept,
+  // so a share link to a just-ended banner stays readable.
+  const bannerOptions = useMemo(() => {
+    const open = BANNERS.filter(
+      (option) => !bannerEnded(option) || option.character === banner.character,
+    )
+    return open.length > 0 ? open : BANNERS
+  }, [banner.character])
+
+  // Announced but undated characters. Static data, so compute once.
+  const upcoming = useMemo(() => upcomingBanners(), [])
+
   // Restore the last roster once, then let the user navigate freely.
   useEffect(() => {
     const saved = loadSaved()
@@ -1234,7 +1286,8 @@ export default function App() {
         <UidScreen
           onSubmit={fetchRoster}
           banner={banner}
-          banners={BANNERS}
+          banners={bannerOptions}
+          upcoming={upcoming}
           onSelectBanner={selectBanner}
           initialUid={uid}
         />
@@ -1279,7 +1332,8 @@ export default function App() {
           roster={roster}
           uid={uid}
           banner={banner}
-          banners={BANNERS}
+          banners={bannerOptions}
+          upcoming={upcoming}
           onSelectBanner={selectBanner}
           onBack={() => setPhase('roster')}
         />

@@ -62,6 +62,20 @@ function rankName(rank: number): string {
 }
 
 export function verdict(roster: RosterCharacter[], banner: Banner): Verdict {
+  // A brand-new banner character can arrive before the community has
+  // agreed on their role tags (src/data/roles.json). Without tags the
+  // engine cannot tell what they would replace, and guessing would be
+  // worse than saying so.
+  if (banner.roleTags.length === 0) {
+    return {
+      decision: 'LOVE',
+      reasons: [
+        `${banner.character} is new, and their role is not catalogued yet, so this engine cannot judge what they would replace on your roster.`,
+        'Pull for them if you love the character, not because a verdict told you to.',
+      ],
+    }
+  }
+
   const strong = roster.filter((character) => character.level >= STRONG_LEVEL)
   const covering = roster.filter((character) => covers(character, banner))
 

@@ -277,4 +277,13 @@ describe('verdict', () => {
     expect(result.decision).toBe('PULL')
     expect(result.reasons.join(' ')).toContain('Prydwen has them at T3')
   })
+
+  it('an uncatalogued banner character never guesses, and never says undefined', () => {
+    // The banner sync can publish a character before roles.json has them.
+    const roster = [character({ name: 'Hu Tao', element: 'Pyro', level: 90 })]
+    const result = verdict(roster, { ...banner, roleTags: [] })
+    expect(result.decision).toBe('LOVE')
+    expect(result.reasons.join(' ')).not.toContain('undefined')
+    expect(result.reasons.join(' ')).toContain('not catalogued yet')
+  })
 })

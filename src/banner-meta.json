@@ -1,0 +1,17 @@
+{
+  "Mitya": {
+    "pairings": ["Yae Miko", "Wriothesley", "Cyno", "Qiqi"],
+    "tier": "T0",
+    "artShift": 0.025
+  },
+  "Furina": {
+    "pairings": ["Neuvillette", "Wriothesley", "Mualani", "Kamisato Ayato"]
+  },
+  "Zibai": {
+    "pairings": ["Linnea", "Columbina", "Illuga", "Chiori"]
+  },
+  "Linnea": {
+    "pairings": ["Zibai", "Columbina", "Illuga", "Gorou"],
+    "artShift": -0.035
+  }
+}

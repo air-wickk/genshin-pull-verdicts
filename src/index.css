@@ -967,11 +967,21 @@ button.remove:focus-visible {
   z-index: 1;
 }
 
-/* Shown only after the hand-updated banner's end date has passed. */
+/* Shown only after a banner's end time has passed. */
 .stale-note {
   font-size: 13px;
   text-align: center;
   color: var(--love);
+}
+
+/* Announced characters without a dated banner yet: informational only,
+   so it stays quiet and apart from the picker it cannot join. */
+.coming-next {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 6px;
+  opacity: 0.8;
 }
 
 /* Why the roster may be shorter than the account really is. */
